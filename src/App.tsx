@@ -23,6 +23,150 @@ interface KeyDef {
 
 type LayoutName = "qwerty" | "dvorak" | "colemak";
 
+type ThemeName = "light" | "dark" | "retro";
+
+interface ThemeColors {
+  page: string;
+  title: string;
+  subtitle: string;
+  board: string;
+  slotEmpty: string;
+  slotEmptyBorder: string;
+  slotDragOver: string;
+  slotDragOverBorder: string;
+  poolBg: string;
+  poolLabel: string;
+  keycap: { bg: string; border: string; text: string; shadow: string };
+  locked: { bg: string; border: string; text: string };
+  correct: { bg: string; border: string; text: string };
+  wrong: { bg: string; border: string; text: string };
+  selected: { bg: string; border: string; text: string };
+  btnPrimary: { bg: string; border: string; text: string; hover: string; hoverBorder: string };
+  btnSecondary: { bg: string; border: string; text: string; hover: string; hoverBorder: string };
+  btnDanger: { bg: string; border: string; text: string; hover: string; hoverBorder: string };
+  btnReveal: { bg: string; border: string; text: string; hover: string; hoverBorder: string };
+  scoreText: string;
+  scoreAccent: string;
+  scoreMuted: string;
+  timer: string;
+  timerDone: string;
+  successBg: string;
+  successText: string;
+  selectorBg: string;
+  selectorActive: string;
+  selectorActiveText: string;
+  selectorInactive: string;
+  selectorDisabled: string;
+}
+
+const THEMES: Record<ThemeName, ThemeColors> = {
+  light: {
+    page: "bg-zinc-50",
+    title: "text-zinc-800",
+    subtitle: "text-zinc-400",
+    board: "bg-zinc-200",
+    slotEmpty: "bg-zinc-100",
+    slotEmptyBorder: "border-zinc-300",
+    slotDragOver: "bg-blue-50",
+    slotDragOverBorder: "border-blue-400",
+    poolBg: "bg-zinc-100",
+    poolLabel: "text-zinc-400",
+    keycap: { bg: "bg-white", border: "border-zinc-500", text: "text-zinc-800", shadow: "shadow" },
+    locked: { bg: "bg-green-50", border: "border-green-300", text: "text-green-800" },
+    correct: { bg: "bg-green-50", border: "border-green-300", text: "text-green-800" },
+    wrong: { bg: "bg-red-50", border: "border-red-300", text: "text-red-900" },
+    selected: { bg: "bg-blue-50", border: "border-blue-300", text: "text-blue-800" },
+    btnPrimary: { bg: "bg-zinc-800", border: "border-zinc-800", text: "text-white", hover: "hover:bg-zinc-600", hoverBorder: "hover:border-zinc-600" },
+    btnSecondary: { bg: "bg-transparent", border: "border-zinc-300", text: "text-zinc-500", hover: "hover:text-zinc-700", hoverBorder: "hover:border-zinc-400" },
+    btnDanger: { bg: "bg-red-800", border: "border-red-800", text: "text-white", hover: "hover:bg-red-600", hoverBorder: "hover:border-red-600" },
+    btnReveal: { bg: "bg-amber-50", border: "border-amber-300", text: "text-amber-700", hover: "hover:bg-amber-100", hoverBorder: "hover:border-amber-400" },
+    scoreText: "text-zinc-500",
+    scoreAccent: "text-green-800",
+    scoreMuted: "text-zinc-400",
+    timer: "text-zinc-400",
+    timerDone: "text-green-700",
+    successBg: "bg-green-50",
+    successText: "text-green-800",
+    selectorBg: "bg-zinc-200",
+    selectorActive: "bg-white",
+    selectorActiveText: "text-zinc-800",
+    selectorInactive: "text-zinc-500",
+    selectorDisabled: "text-zinc-300",
+  },
+  dark: {
+    page: "bg-zinc-900",
+    title: "text-zinc-100",
+    subtitle: "text-zinc-500",
+    board: "bg-zinc-800",
+    slotEmpty: "bg-zinc-700",
+    slotEmptyBorder: "border-zinc-600",
+    slotDragOver: "bg-blue-900/40",
+    slotDragOverBorder: "border-blue-400",
+    poolBg: "bg-zinc-800",
+    poolLabel: "text-zinc-500",
+    keycap: { bg: "bg-zinc-700", border: "border-zinc-500", text: "text-zinc-100", shadow: "shadow-md shadow-black/30" },
+    locked: { bg: "bg-green-900/40", border: "border-green-600", text: "text-green-300" },
+    correct: { bg: "bg-green-900/40", border: "border-green-600", text: "text-green-300" },
+    wrong: { bg: "bg-red-900/40", border: "border-red-500", text: "text-red-300" },
+    selected: { bg: "bg-blue-900/40", border: "border-blue-400", text: "text-blue-300" },
+    btnPrimary: { bg: "bg-zinc-100", border: "border-zinc-100", text: "text-zinc-900", hover: "hover:bg-zinc-300", hoverBorder: "hover:border-zinc-300" },
+    btnSecondary: { bg: "bg-transparent", border: "border-zinc-600", text: "text-zinc-400", hover: "hover:text-zinc-200", hoverBorder: "hover:border-zinc-500" },
+    btnDanger: { bg: "bg-red-700", border: "border-red-700", text: "text-white", hover: "hover:bg-red-600", hoverBorder: "hover:border-red-600" },
+    btnReveal: { bg: "bg-amber-900/30", border: "border-amber-600", text: "text-amber-400", hover: "hover:bg-amber-900/50", hoverBorder: "hover:border-amber-500" },
+    scoreText: "text-zinc-400",
+    scoreAccent: "text-green-400",
+    scoreMuted: "text-zinc-500",
+    timer: "text-zinc-500",
+    timerDone: "text-green-400",
+    successBg: "bg-green-900/30",
+    successText: "text-green-300",
+    selectorBg: "bg-zinc-800",
+    selectorActive: "bg-zinc-600",
+    selectorActiveText: "text-zinc-100",
+    selectorInactive: "text-zinc-400",
+    selectorDisabled: "text-zinc-600",
+  },
+  retro: {
+    page: "bg-[#0a0a1a]",
+    title: "text-fuchsia-400",
+    subtitle: "text-purple-400/70",
+    board: "bg-[#1a0a2e]",
+    slotEmpty: "bg-[#120820]",
+    slotEmptyBorder: "border-purple-800/60",
+    slotDragOver: "bg-fuchsia-900/30",
+    slotDragOverBorder: "border-fuchsia-400",
+    poolBg: "bg-[#1a0a2e]/80",
+    poolLabel: "text-purple-400/70",
+    keycap: { bg: "bg-[#1e1040]", border: "border-fuchsia-600", text: "text-cyan-300", shadow: "shadow-md shadow-fuchsia-500/30" },
+    locked: { bg: "bg-cyan-900/30", border: "border-cyan-400", text: "text-cyan-300" },
+    correct: { bg: "bg-cyan-900/30", border: "border-cyan-400", text: "text-cyan-300" },
+    wrong: { bg: "bg-pink-900/40", border: "border-pink-500", text: "text-pink-300" },
+    selected: { bg: "bg-fuchsia-900/40", border: "border-fuchsia-400", text: "text-fuchsia-200" },
+    btnPrimary: { bg: "bg-fuchsia-600", border: "border-fuchsia-500", text: "text-white", hover: "hover:bg-fuchsia-500", hoverBorder: "hover:border-fuchsia-400" },
+    btnSecondary: { bg: "bg-transparent", border: "border-purple-600", text: "text-purple-300", hover: "hover:text-fuchsia-300", hoverBorder: "hover:border-fuchsia-500" },
+    btnDanger: { bg: "bg-pink-700", border: "border-pink-600", text: "text-white", hover: "hover:bg-pink-600", hoverBorder: "hover:border-pink-500" },
+    btnReveal: { bg: "bg-cyan-900/30", border: "border-cyan-500", text: "text-cyan-300", hover: "hover:bg-cyan-900/50", hoverBorder: "hover:border-cyan-400" },
+    scoreText: "text-purple-300",
+    scoreAccent: "text-cyan-400",
+    scoreMuted: "text-purple-500",
+    timer: "text-purple-500",
+    timerDone: "text-cyan-400",
+    successBg: "bg-cyan-900/20",
+    successText: "text-cyan-300",
+    selectorBg: "bg-[#1a0a2e]",
+    selectorActive: "bg-fuchsia-600",
+    selectorActiveText: "text-white",
+    selectorInactive: "text-purple-400",
+    selectorDisabled: "text-purple-700",
+  },
+};
+
+const THEME_OPTIONS: { value: ThemeName; label: string }[] = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "retro", label: "Retro" },
+];
+
 type KeycapState = "locked" | "correct" | "wrong" | "selected" | "placed" | "dragover" | "pool";
 
 type Placements = Record<string, string>;
@@ -395,31 +539,31 @@ const sz = (w: number): { width: number; height: number } => ({
   height: KEY_UNIT - KEY_GAP,
 });
 
-const keycapCls = (state: KeycapState): string => {
+const keycapCls = (state: KeycapState, t: ThemeColors): string => {
   const base =
     "flex items-center justify-center rounded font-mono select-none transition-all duration-150 shrink-0 box-border border-2 tracking-wide";
   switch (state) {
     case "locked":
     case "correct":
-      return `${base} bg-green-50 border-green-300 text-green-800 cursor-default`;
+      return `${base} ${t.locked.bg} ${t.locked.border} ${t.locked.text} cursor-default`;
     case "wrong":
-      return `${base} bg-red-50 border-red-300 text-red-900 cursor-grab`;
+      return `${base} ${t.wrong.bg} ${t.wrong.border} ${t.wrong.text} cursor-grab`;
     case "selected":
-      return `${base} bg-blue-50 border-blue-300 text-blue-800 scale-105 cursor-grab`;
+      return `${base} ${t.selected.bg} ${t.selected.border} ${t.selected.text} scale-105 cursor-grab`;
     case "placed":
-      return `${base} bg-white border-zinc-600 text-zinc-800 shadow-sm cursor-grab`;
+      return `${base} ${t.keycap.bg} ${t.keycap.border} ${t.keycap.text} shadow-sm cursor-grab`;
     case "dragover":
-      return `${base} bg-blue-50 border-blue-400 border-dashed cursor-grab`;
+      return `${base} ${t.slotDragOver} ${t.slotDragOverBorder} border-dashed cursor-grab`;
     case "pool":
-      return `${base} bg-white border-zinc-500 text-zinc-800 shadow cursor-grab`;
+      return `${base} ${t.keycap.bg} ${t.keycap.border} ${t.keycap.text} ${t.keycap.shadow} cursor-grab`;
   }
 };
 
-const slotCls = (isDragOver: boolean, hasSelected: boolean): string => {
+const slotCls = (isDragOver: boolean, hasSelected: boolean, t: ThemeColors): string => {
   const base =
-    "flex items-center justify-center rounded font-mono text-[10px] text-zinc-400 transition-all duration-150 shrink-0 box-border border-2 border-dashed";
-  if (isDragOver) return `${base} border-blue-400 bg-blue-50 cursor-pointer`;
-  return `${base} border-zinc-300 bg-zinc-100 ${hasSelected ? "cursor-pointer" : "cursor-default"}`;
+    "flex items-center justify-center rounded font-mono text-[10px] transition-all duration-150 shrink-0 box-border border-2 border-dashed";
+  if (isDragOver) return `${base} ${t.slotDragOverBorder} ${t.slotDragOver} cursor-pointer`;
+  return `${base} ${t.slotEmptyBorder} ${t.slotEmpty} ${hasSelected ? "cursor-pointer" : "cursor-default"}`;
 };
 
 const getState = (
@@ -440,6 +584,10 @@ const getState = (
 // --- Component ---
 
 export default function App() {
+  const [theme, setTheme] = useState<ThemeName>(() =>
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+  );
+  const t = THEMES[theme];
   const [layout, setLayout] = useState<LayoutName>("qwerty");
   const [placements, setPlacements] = useState<Placements>({});
   const [locked, setLocked] = useState<Set<string>>(new Set());
@@ -677,34 +825,53 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex flex-col items-center px-4 py-6 font-mono">
+    <div className={`min-h-screen ${t.page} flex flex-col items-center px-4 py-6 font-mono transition-colors duration-300`}>
       {/* Header */}
       <div className="text-center mb-7">
-        <h1 className="text-xl font-semibold text-zinc-800 tracking-tight">keycapped</h1>
-        <p className="text-xs text-zinc-400 mt-1.5">
+        <h1 className={`text-xl font-semibold ${t.title} tracking-tight`}>keycapped</h1>
+        <p className={`text-xs ${t.subtitle} mt-1.5`}>
           Drag keycaps to their correct positions — click to select, click slot to place
         </p>
-        {/* Layout selector */}
-        <div className="flex gap-1 my-6 p-1 bg-zinc-200 rounded-lg mx-auto w-fit">
-          {LAYOUT_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => handleLayoutChange(opt.value)}
-              disabled={gameActive && opt.value !== layout}
-              className={`font-mono text-xs px-3 py-1.5 rounded-md transition-all duration-150 tracking-wide ${
-                layout === opt.value
-                  ? "bg-white text-zinc-800 font-semibold shadow-sm"
-                  : gameActive
-                    ? "text-zinc-300 cursor-not-allowed"
-                    : "text-zinc-500 hover:text-zinc-700 cursor-pointer"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+        {/* Selectors */}
+        <div className="flex gap-3 my-6 justify-center flex-wrap">
+          {/* Layout selector */}
+          <div className={`flex gap-1 p-1 ${t.selectorBg} rounded-lg w-fit`}>
+            {LAYOUT_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handleLayoutChange(opt.value)}
+                disabled={gameActive && opt.value !== layout}
+                className={`font-mono text-xs px-3 py-1.5 rounded-md transition-all duration-150 tracking-wide ${
+                  layout === opt.value
+                    ? `${t.selectorActive} ${t.selectorActiveText} font-semibold shadow-sm`
+                    : gameActive
+                      ? `${t.selectorDisabled} cursor-not-allowed`
+                      : `${t.selectorInactive} hover:opacity-80 cursor-pointer`
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {/* Theme selector */}
+          <div className={`flex gap-1 p-1 ${t.selectorBg} rounded-lg w-fit`}>
+            {THEME_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setTheme(opt.value)}
+                className={`font-mono text-xs px-3 py-1.5 rounded-md transition-all duration-150 tracking-wide ${
+                  theme === opt.value
+                    ? `${t.selectorActive} ${t.selectorActiveText} font-semibold shadow-sm`
+                    : `${t.selectorInactive} hover:opacity-80 cursor-pointer`
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
         <p
-          className={`text-sm tabular-nums ${allCorrect ? "text-green-700 font-semibold" : "text-zinc-400"}`}
+          className={`text-sm tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
         >
           {formatTime(elapsed)}
         </p>
@@ -712,7 +879,7 @@ export default function App() {
 
       {/* Keyboard */}
       <div
-        className="bg-zinc-200 rounded-xl p-2 inline-flex flex-col shadow-md"
+        className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-colors duration-300`}
         style={{ gap: KEY_GAP }}
       >
         {BOARD.map((row, ri) => (
@@ -734,7 +901,7 @@ export default function App() {
                 return (
                   <div
                     key={item.id}
-                    className={slotCls(isDragOver, selected !== null)}
+                    className={slotCls(isDragOver, selected !== null, t)}
                     style={sz(item.w)}
                     onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                       e.preventDefault();
@@ -768,7 +935,7 @@ export default function App() {
                   onDrop={handleDropSlot(item.id)}
                   onClick={() => handleSlotClick(item.id)}
                   onDoubleClick={() => !isLocked && removeFromSlot(item.id)}
-                  className={keycapCls(state)}
+                  className={keycapCls(state, t)}
                   style={{ ...sz(item.w), fontSize: item.w > 1.5 ? 11 : 12 }}
                 >
                   {placedKey.label}
@@ -783,16 +950,16 @@ export default function App() {
       <div className="flex items-center gap-4 my-5 flex-wrap justify-center min-h-[38px]">
         {confirmingReset ? (
           <>
-            <span className="text-sm text-zinc-500 font-medium">Are you sure?</span>
+            <span className={`text-sm ${t.scoreText} font-medium`}>Are you sure?</span>
             <button
               onClick={resetGame}
-              className="font-mono text-sm font-semibold px-5 py-2 rounded-md border-2 border-red-800 bg-red-800 text-white cursor-pointer transition-all duration-150 tracking-wide hover:bg-red-600 hover:border-red-600"
+              className={`font-mono text-sm font-semibold px-5 py-2 rounded-md border-2 ${t.btnDanger.border} ${t.btnDanger.bg} ${t.btnDanger.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnDanger.hover} ${t.btnDanger.hoverBorder}`}
             >
               Yes
             </button>
             <button
               onClick={() => setConfirmingReset(false)}
-              className="font-mono text-sm font-medium px-5 py-2 rounded-md border-2 border-zinc-300 bg-transparent text-zinc-500 cursor-pointer transition-all duration-150 tracking-wide hover:border-zinc-400 hover:text-zinc-700"
+              className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`}
             >
               No
             </button>
@@ -802,9 +969,9 @@ export default function App() {
             <button
               onClick={check}
               disabled={!hasPlaced}
-              className={`font-mono text-sm font-semibold px-6 py-2 rounded-md border-2 border-zinc-800 bg-zinc-800 text-white tracking-wide transition-all duration-150 ${
+              className={`font-mono text-sm font-semibold px-6 py-2 rounded-md border-2 ${t.btnPrimary.border} ${t.btnPrimary.bg} ${t.btnPrimary.text} tracking-wide transition-all duration-150 ${
                 hasPlaced
-                  ? "cursor-pointer hover:bg-zinc-600 hover:border-zinc-600"
+                  ? `cursor-pointer ${t.btnPrimary.hover} ${t.btnPrimary.hoverBorder}`
                   : "cursor-not-allowed opacity-40"
               }`}
             >
@@ -812,29 +979,29 @@ export default function App() {
             </button>
             <button
               onClick={() => setConfirmingReset(true)}
-              className="font-mono text-sm font-medium px-5 py-2 rounded-md border-2 border-zinc-300 bg-transparent text-zinc-500 cursor-pointer transition-all duration-150 tracking-wide hover:border-zinc-400 hover:text-zinc-700"
+              className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`}
             >
               Reset
             </button>
             {tries >= 10 && !allCorrect && (
               <button
                 onClick={reveal}
-                className="font-mono text-sm font-medium px-5 py-2 rounded-md border-2 border-amber-300 bg-amber-50 text-amber-700 cursor-pointer transition-all duration-150 tracking-wide hover:bg-amber-100 hover:border-amber-400"
+                className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnReveal.border} ${t.btnReveal.bg} ${t.btnReveal.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnReveal.hover} ${t.btnReveal.hoverBorder}`}
               >
                 Reveal
               </button>
             )}
             {score && (
               <div
-                className={`text-sm font-semibold ${allCorrect ? "text-green-800" : "text-zinc-500"}`}
+                className={`text-sm font-semibold ${allCorrect ? t.scoreAccent : t.scoreText}`}
               >
                 {allCorrect ? (
                   <span>✓ Perfect — all {score.total} keys correct</span>
                 ) : (
                   <span>
                     <span className="text-lg font-bold">{score.correct}</span>
-                    <span className="text-zinc-400"> / {score.total}</span>
-                    <span className="text-zinc-400 font-normal ml-1.5">correct</span>
+                    <span className={`${t.scoreMuted}`}> / {score.total}</span>
+                    <span className={`${t.scoreMuted} font-normal ml-1.5`}>correct</span>
                   </span>
                 )}
               </div>
@@ -846,11 +1013,11 @@ export default function App() {
       {/* Pool */}
       {poolKeys.length > 0 && (
         <div className="max-w-3xl w-full">
-          <div className="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold mb-2 text-center">
+          <div className={`text-[10px] ${t.poolLabel} uppercase tracking-widest font-semibold mb-2 text-center`}>
             Keycaps ({poolKeys.length} remaining)
           </div>
           <div
-            className="flex flex-wrap justify-center p-3 bg-zinc-100 rounded-xl min-h-[50px]"
+            className={`flex flex-wrap justify-center p-3 ${t.poolBg} rounded-xl min-h-[50px] transition-colors duration-300`}
             style={{ gap: KEY_GAP + 1 }}
             onDragOver={(e: React.DragEvent<HTMLDivElement>) => e.preventDefault()}
             onDrop={handleDropPool}
@@ -864,7 +1031,7 @@ export default function App() {
                   draggable
                   onDragStart={handleDragStart(id, "pool")}
                   onClick={() => handlePoolKeyClick(id)}
-                  className={keycapCls(isSelected ? "selected" : "pool")}
+                  className={keycapCls(isSelected ? "selected" : "pool", t)}
                   style={{ ...sz(key.w), fontSize: key.w > 1.5 ? 11 : 12 }}
                 >
                   {key.label}
@@ -876,7 +1043,7 @@ export default function App() {
       )}
 
       {allCorrect && (
-        <div className="mt-5 px-6 py-3 bg-green-50 rounded-lg text-green-800 text-sm font-medium text-center">
+        <div className={`mt-5 px-6 py-3 ${t.successBg} rounded-lg ${t.successText} text-sm font-medium text-center`}>
           You know your keyboard. Well done in {formatTime(elapsed)}.
         </div>
       )}
