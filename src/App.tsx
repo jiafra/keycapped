@@ -119,7 +119,7 @@ const THEMES: Record<ThemeName, ThemeColors> = {
     selectorBg: "bg-stone-300",
     selectorActive: "bg-stone-50",
     selectorActiveText: "text-stone-800",
-    selectorInactive: "text-stone-500",
+    selectorInactive: "text-stone-600",
     selectorDisabled: "text-stone-400",
   },
   dark: {
