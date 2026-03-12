@@ -893,6 +893,7 @@ export default function App() {
   const handleDropSlot = (slotId: string) => (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setHoveredSlot(null);
+    setConfirmingReset(false);
     const { key, source } = dragRef.current;
     if (!key) return;
     placeKey(key, slotId, source);
