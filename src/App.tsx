@@ -830,7 +830,7 @@ export default function App() {
       <div className="text-center mb-7">
         <h1 className={`text-xl font-semibold ${t.title} tracking-tight`}>keycapped</h1>
         <p className={`text-xs ${t.subtitle} mt-1.5`}>
-          Drag keycaps to their correct positions — click to select, click slot to place
+          All your keycaps fell off. Can you put them back?
         </p>
         {/* Selectors */}
         <div className="flex gap-3 my-6 justify-center flex-wrap">
