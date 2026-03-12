@@ -705,7 +705,7 @@ const sfx = {
 
 // --- Helpers ---
 
-const sz = (w: number): { width: number; height: number } => ({
+const keySize = (w: number): { width: number; height: number } => ({
   width: w * KEY_UNIT - KEY_GAP,
   height: KEY_UNIT - KEY_GAP,
 });
@@ -1090,7 +1090,7 @@ export default function App() {
           <div key={ri} className="flex" style={{ gap: KEY_GAP }}>
             {row.map((item) => {
               if ("spacer" in item) {
-                return <div key={item.id} className="shrink-0" style={sz(item.w)} />;
+                return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
               }
 
               const placedKeyId: string | undefined = placements[item.id];
@@ -1108,7 +1108,7 @@ export default function App() {
                   <div
                     key={item.id}
                     className={slotCls(isDragOver, selected !== null, t)}
-                    style={sz(item.w)}
+                    style={keySize(item.w)}
                     onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                       e.preventDefault();
                       setHoveredSlot(item.id);
@@ -1143,7 +1143,7 @@ export default function App() {
                   onClick={() => handleSlotClick(item.id)}
                   onDoubleClick={() => !isLocked && removeFromSlot(item.id)}
                   className={keycapCls(state, t)}
-                  style={{ ...sz(item.w), fontSize: item.w > 1.5 ? 11 : 12 }}
+                  style={{ ...keySize(item.w), fontSize: item.w > 1.5 ? 11 : 12 }}
                 >
                   {placedKey.label}
                 </div>
@@ -1239,7 +1239,7 @@ export default function App() {
                   onDragStart={handleDragStart(id, "pool")}
                   onClick={() => handlePoolKeyClick(id)}
                   className={keycapCls(isSelected ? "selected" : "pool", t)}
-                  style={{ ...sz(key.w), fontSize: key.w > 1.5 ? 11 : 12 }}
+                  style={{ ...keySize(key.w), fontSize: key.w > 1.5 ? 11 : 12 }}
                 >
                   {key.label}
                 </div>
