@@ -755,11 +755,25 @@ const getState = (
 // --- Component ---
 
 export default function App() {
-  const [theme, setTheme] = useState<ThemeName>(() =>
-    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
-  );
+  const [theme, setTheme] = useState<ThemeName>(() => {
+    const saved = localStorage.getItem("keycapped-theme");
+    if (saved === "light" || saved === "dark" || saved === "retro") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("keycapped-theme", theme);
+  }, [theme]);
   const t = THEMES[theme];
-  const [layout, setLayout] = useState<LayoutName>("qwerty");
+  const [layout, setLayout] = useState<LayoutName>(() => {
+    const saved = localStorage.getItem("keycapped-layout");
+    if (saved === "qwerty" || saved === "dvorak" || saved === "colemak") return saved;
+    return "qwerty";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("keycapped-layout", layout);
+  }, [layout]);
   const [placements, setPlacements] = useState<Placements>({});
   const [locked, setLocked] = useState<Set<string>>(new Set());
   const [results, setResults] = useState<Record<string, never> | null>(null);
