@@ -532,6 +532,90 @@ async function submitAttempt(payload: {
   return new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+// --- Sound ---
+
+const audioCtx = (() => {
+  let ctx: AudioContext | null = null;
+  return () => {
+    if (!ctx) ctx = new AudioContext();
+    return ctx;
+  };
+})();
+
+const sfx = {
+  pickup() {
+    const ctx = audioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(600, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  },
+  drop() {
+    const ctx = audioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.12);
+  },
+  error() {
+    const ctx = audioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "square";
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.25);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  },
+  success() {
+    const ctx = audioCtx();
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      const t = ctx.currentTime + i * 0.12;
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.1, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.2);
+    });
+  },
+  reset() {
+    const ctx = audioCtx();
+    const notes = [500, 380, 280];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      const t = ctx.currentTime + i * 0.07;
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.1, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.12);
+    });
+  },
+};
+
 // --- Helpers ---
 
 const sz = (w: number): { width: number; height: number } => ({
@@ -695,6 +779,7 @@ export default function App() {
     (keyId: string, source: string) => (e: React.DragEvent<HTMLDivElement>) => {
       if (locked.has(source)) return;
       dragRef.current = { key: keyId, source };
+      sfx.pickup();
       e.dataTransfer.effectAllowed = "move";
       try {
         e.dataTransfer.setData("text/plain", keyId);
@@ -709,6 +794,7 @@ export default function App() {
     const { key, source } = dragRef.current;
     if (!key) return;
     placeKey(key, slotId, source);
+    sfx.drop();
     dragRef.current = { key: null, source: null };
     setSelected(null);
   };
@@ -717,6 +803,7 @@ export default function App() {
     e.preventDefault();
     const { key, source } = dragRef.current;
     if (!key || source === "pool") return;
+    sfx.drop();
     removeFromSlot(source);
     dragRef.current = { key: null, source: null };
   };
@@ -730,9 +817,11 @@ export default function App() {
         return;
       }
       placeKey(selected, slotId, selectedSource);
+      sfx.drop();
       setSelected(null);
       setSelectedSource(null);
     } else if (placedKeyId && !locked.has(slotId)) {
+      sfx.pickup();
       setSelected(placedKeyId);
       setSelectedSource(slotId);
     }
@@ -744,9 +833,11 @@ export default function App() {
       setSelectedSource(null);
     } else if (selected && selectedSource && selectedSource !== "pool") {
       removeFromSlot(selectedSource);
+      sfx.pickup();
       setSelected(keyId);
       setSelectedSource("pool");
     } else {
+      sfx.pickup();
       setSelected(keyId);
       setSelectedSource("pool");
     }
@@ -767,6 +858,12 @@ export default function App() {
     setTries(nextTry);
     setSelected(null);
     setSelectedSource(null);
+
+    if (correct === allKeys.length) {
+      sfx.success();
+    } else {
+      sfx.error();
+    }
 
     submitAttempt({
       attempt: nextTry,
@@ -791,6 +888,7 @@ export default function App() {
   };
 
   const resetGame = useCallback(() => {
+    sfx.reset();
     setPlacements({});
     setLocked(new Set());
     setResults(null);
@@ -912,6 +1010,7 @@ export default function App() {
                     onClick={() => {
                       if (selected && selectedSource) {
                         placeKey(selected, item.id, selectedSource);
+                        sfx.drop();
                         setSelected(null);
                         setSelectedSource(null);
                       }
