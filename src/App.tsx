@@ -1131,6 +1131,7 @@ export default function App() {
                     onDragLeave={() => setHoveredSlot(null)}
                     onDrop={handleDropSlot(item.id)}
                     onClick={() => {
+                      setConfirmingReset(false);
                       if (selected && selectedSource) {
                         placeKey(selected, item.id, selectedSource);
                         sfx.drop();
