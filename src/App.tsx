@@ -458,6 +458,17 @@ export default function App() {
   const allKeys = useMemo(() => buildKeys(layout), [layout]);
   const keyMap = useMemo(() => buildKeyMap(allKeys), [allKeys]);
 
+  // Keys with the same label are interchangeable (e.g. lshift/rshift, lctrl/rctrl)
+  const isCorrectPlacement = useCallback(
+    (slotId: string, placedKeyId: string): boolean => {
+      if (slotId === placedKeyId) return true;
+      const slotKey = keyMap[slotId];
+      const placed = keyMap[placedKeyId];
+      return !!slotKey && !!placed && slotKey.label === placed.label;
+    },
+    [keyMap],
+  );
+
   const startTimer = useCallback(() => {
     if (timerStarted.current) return;
     timerStarted.current = true;
@@ -490,10 +501,10 @@ export default function App() {
     if (!results) return null;
     let correct = 0;
     for (const k of allKeys) {
-      if (locked.has(k.id) || placements[k.id] === k.id) correct++;
+      if (locked.has(k.id) || (placements[k.id] && isCorrectPlacement(k.id, placements[k.id]))) correct++;
     }
     return { correct, total: allKeys.length };
-  }, [results, placements, locked, allKeys]);
+  }, [results, placements, locked, allKeys, isCorrectPlacement]);
 
   const placeKey = useCallback(
     (keyId: string, slotId: string, fromSlot: string | null) => {
@@ -597,7 +608,7 @@ export default function App() {
     const newLocked = new Set(locked);
     let correct = 0;
     for (const k of allKeys) {
-      if (locked.has(k.id) || placements[k.id] === k.id) {
+      if (locked.has(k.id) || (placements[k.id] && isCorrectPlacement(k.id, placements[k.id]))) {
         newLocked.add(k.id);
         correct++;
       }
@@ -714,8 +725,8 @@ export default function App() {
               const placedKeyId: string | undefined = placements[item.id];
               const placedKey: KeyDef | undefined = placedKeyId ? keyMap[placedKeyId] : undefined;
               const isLocked = locked.has(item.id);
-              const isCorrect = !!results && !isLocked && placedKeyId === item.id;
-              const isWrong = !!results && !!placedKeyId && placedKeyId !== item.id;
+              const isCorrect = !!results && !isLocked && !!placedKeyId && isCorrectPlacement(item.id, placedKeyId);
+              const isWrong = !!results && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
               const isSelected = selected !== null && selectedSource === item.id;
               const isDragOver = hoveredSlot === item.id;
 
