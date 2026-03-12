@@ -2,11 +2,9 @@ import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 
 // --- Types ---
 
-interface KeyDef {
+interface SlotDef {
   id: string;
-  label: string;
   w: number;
-  spacer?: false;
 }
 
 interface SpacerDef {
@@ -15,7 +13,15 @@ interface SpacerDef {
   spacer: true;
 }
 
-type RowItem = KeyDef | SpacerDef;
+type BoardItem = SlotDef | SpacerDef;
+
+interface KeyDef {
+  id: string;
+  label: string;
+  w: number;
+}
+
+type LayoutName = "qwerty" | "dvorak" | "colemak";
 
 type KeycapState = "locked" | "correct" | "wrong" | "selected" | "placed" | "dragover" | "pool";
 
@@ -33,114 +39,329 @@ interface Score {
 const KEY_UNIT = 42;
 const KEY_GAP = 3;
 
-const mkKey = (id: string, label: string, w: number = 1): KeyDef => ({ id, label, w });
-const mkSpacer = (id: string, w: number): SpacerDef => ({ id, spacer: true, w });
+const slot = (id: string, w: number = 1): SlotDef => ({ id, w });
+const spacer = (id: string, w: number): SpacerDef => ({ id, w, spacer: true });
 
-const ROWS: RowItem[][] = [
+// Physical board — defines positions, widths, spacers. Shared across all layouts.
+const BOARD: BoardItem[][] = [
   [
-    mkKey("esc", "Esc"),
-    mkSpacer("_s0", 0.5),
-    mkKey("f1", "F1"),
-    mkKey("f2", "F2"),
-    mkKey("f3", "F3"),
-    mkKey("f4", "F4"),
-    mkSpacer("_s1", 0.5),
-    mkKey("f5", "F5"),
-    mkKey("f6", "F6"),
-    mkKey("f7", "F7"),
-    mkKey("f8", "F8"),
-    mkSpacer("_s2", 0.5),
-    mkKey("f9", "F9"),
-    mkKey("f10", "F10"),
-    mkKey("f11", "F11"),
-    mkKey("f12", "F12"),
-    mkSpacer("_s3", 0.5),
-    mkKey("del", "Del"),
+    slot("esc"),
+    spacer("_s0", 0.5),
+    slot("f1"),
+    slot("f2"),
+    slot("f3"),
+    slot("f4"),
+    spacer("_s1", 0.5),
+    slot("f5"),
+    slot("f6"),
+    slot("f7"),
+    slot("f8"),
+    spacer("_s2", 0.5),
+    slot("f9"),
+    slot("f10"),
+    slot("f11"),
+    slot("f12"),
+    spacer("_s3", 0.5),
+    slot("del"),
   ],
   [
-    mkKey("grave", "`"),
-    mkKey("n1", "!"),
-    mkKey("n2", "@"),
-    mkKey("n3", "#"),
-    mkKey("n4", "$"),
-    mkKey("n5", "%"),
-    mkKey("n6", "^"),
-    mkKey("n7", "&"),
-    mkKey("n8", "*"),
-    mkKey("n9", "("),
-    mkKey("n0", ")"),
-    mkKey("minus", "−"),
-    mkKey("equal", "="),
-    mkKey("bksp", "Bksp", 2),
-    mkKey("home", "Home"),
+    slot("grave"),
+    slot("n1"),
+    slot("n2"),
+    slot("n3"),
+    slot("n4"),
+    slot("n5"),
+    slot("n6"),
+    slot("n7"),
+    slot("n8"),
+    slot("n9"),
+    slot("n0"),
+    slot("minus"),
+    slot("equal"),
+    slot("bksp", 2),
+    slot("home"),
   ],
   [
-    mkKey("tab", "Tab", 1.5),
-    mkKey("q", "Q"),
-    mkKey("w", "W"),
-    mkKey("e", "E"),
-    mkKey("r", "R"),
-    mkKey("t", "T"),
-    mkKey("y", "Y"),
-    mkKey("u", "U"),
-    mkKey("i", "I"),
-    mkKey("o", "O"),
-    mkKey("p", "P"),
-    mkKey("lbrk", "["),
-    mkKey("rbrk", "]"),
-    mkKey("bslash", "\\", 1.5),
-    mkKey("pgup", "PgUp"),
+    slot("tab", 1.5),
+    slot("q"),
+    slot("w"),
+    slot("e"),
+    slot("r"),
+    slot("t"),
+    slot("y"),
+    slot("u"),
+    slot("i"),
+    slot("o"),
+    slot("p"),
+    slot("lbrk"),
+    slot("rbrk"),
+    slot("bslash", 1.5),
+    slot("pgup"),
   ],
   [
-    mkKey("caps", "Caps", 1.75),
-    mkKey("a", "A"),
-    mkKey("s", "S"),
-    mkKey("d", "D"),
-    mkKey("f", "F"),
-    mkKey("g", "G"),
-    mkKey("h", "H"),
-    mkKey("j", "J"),
-    mkKey("k", "K"),
-    mkKey("l", "L"),
-    mkKey("semi", ";"),
-    mkKey("quote", "'"),
-    mkKey("enter", "Enter", 2.25),
-    mkKey("pgdn", "PgDn"),
+    slot("caps", 1.75),
+    slot("a"),
+    slot("s"),
+    slot("d"),
+    slot("f"),
+    slot("g"),
+    slot("h"),
+    slot("j"),
+    slot("k"),
+    slot("l"),
+    slot("semi"),
+    slot("quote"),
+    slot("enter", 2.25),
+    slot("pgdn"),
   ],
   [
-    mkKey("lshift", "Shift", 2.25),
-    mkKey("z", "Z"),
-    mkKey("x", "X"),
-    mkKey("c", "C"),
-    mkKey("v", "V"),
-    mkKey("b", "B"),
-    mkKey("n", "N"),
-    mkKey("m", "M"),
-    mkKey("comma", ","),
-    mkKey("period", "."),
-    mkKey("slash", "/"),
-    mkKey("rshift", "Shift", 1.75),
-    mkKey("up", "↑"),
-    mkKey("end", "End"),
+    slot("lshift", 2.25),
+    slot("z"),
+    slot("x"),
+    slot("c"),
+    slot("v"),
+    slot("b"),
+    slot("n"),
+    slot("m"),
+    slot("comma"),
+    slot("period"),
+    slot("slash"),
+    slot("rshift", 1.75),
+    slot("up"),
+    slot("end"),
   ],
   [
-    mkKey("lctrl", "Ctrl", 1.25),
-    mkKey("lwin", "Win", 1.25),
-    mkKey("lalt", "Alt", 1.25),
-    mkKey("space", "", 6.25),
-    mkKey("ralt", "Alt"),
-    mkKey("fn", "Fn"),
-    mkKey("rctrl", "Ctrl"),
-    mkKey("left", "←"),
-    mkKey("down", "↓"),
-    mkKey("right", "→"),
+    slot("lctrl", 1.25),
+    slot("lwin", 1.25),
+    slot("lalt", 1.25),
+    slot("space", 6.25),
+    slot("ralt"),
+    slot("fn"),
+    slot("rctrl"),
+    slot("left"),
+    slot("down"),
+    slot("right"),
   ],
 ];
 
-const isKey = (item: RowItem): item is KeyDef => !item.spacer;
+const isSlot = (item: BoardItem): item is SlotDef => !("spacer" in item);
+const ALL_SLOT_IDS: string[] = BOARD.flat()
+  .filter(isSlot)
+  .map((s) => s.id);
+const SLOT_WIDTHS: Record<string, number> = Object.fromEntries(
+  BOARD.flat()
+    .filter(isSlot)
+    .map((s) => [s.id, s.w]),
+);
 
-const ALL_KEYS: KeyDef[] = ROWS.flat().filter(isKey);
-const KEY_MAP: Record<string, KeyDef> = Object.fromEntries(ALL_KEYS.map((k) => [k.id, k]));
+// Labels shared by all layouts (modifiers, nav, function keys)
+const FIXED_LABELS: Record<string, string> = {
+  esc: "Esc",
+  f1: "F1",
+  f2: "F2",
+  f3: "F3",
+  f4: "F4",
+  f5: "F5",
+  f6: "F6",
+  f7: "F7",
+  f8: "F8",
+  f9: "F9",
+  f10: "F10",
+  f11: "F11",
+  f12: "F12",
+  del: "Del",
+  bksp: "Bksp",
+  home: "Home",
+  tab: "Tab",
+  pgup: "PgUp",
+  caps: "Caps",
+  pgdn: "PgDn",
+  enter: "Enter",
+  lshift: "Shift",
+  rshift: "Shift",
+  up: "↑",
+  end: "End",
+  lctrl: "Ctrl",
+  lwin: "Win",
+  lalt: "Alt",
+  space: "",
+  ralt: "Alt",
+  fn: "Fn",
+  rctrl: "Ctrl",
+  left: "←",
+  down: "↓",
+  right: "→",
+};
+
+// Per-layout labels for variable keys (alpha, numbers-as-symbols, punctuation)
+const VARIABLE_LABELS: Record<LayoutName, Record<string, string>> = {
+  qwerty: {
+    grave: "`",
+    n1: "!",
+    n2: "@",
+    n3: "#",
+    n4: "$",
+    n5: "%",
+    n6: "^",
+    n7: "&",
+    n8: "*",
+    n9: "(",
+    n0: ")",
+    minus: "−",
+    equal: "=",
+    q: "Q",
+    w: "W",
+    e: "E",
+    r: "R",
+    t: "T",
+    y: "Y",
+    u: "U",
+    i: "I",
+    o: "O",
+    p: "P",
+    lbrk: "[",
+    rbrk: "]",
+    bslash: "\\",
+    a: "A",
+    s: "S",
+    d: "D",
+    f: "F",
+    g: "G",
+    h: "H",
+    j: "J",
+    k: "K",
+    l: "L",
+    semi: ";",
+    quote: "'",
+    z: "Z",
+    x: "X",
+    c: "C",
+    v: "V",
+    b: "B",
+    n: "N",
+    m: "M",
+    comma: ",",
+    period: ".",
+    slash: "/",
+  },
+  dvorak: {
+    grave: "`",
+    n1: "!",
+    n2: "@",
+    n3: "#",
+    n4: "$",
+    n5: "%",
+    n6: "^",
+    n7: "&",
+    n8: "*",
+    n9: "(",
+    n0: ")",
+    minus: "[",
+    equal: "]",
+    q: "'",
+    w: ",",
+    e: ".",
+    r: "P",
+    t: "Y",
+    y: "F",
+    u: "G",
+    i: "C",
+    o: "R",
+    p: "L",
+    lbrk: "/",
+    rbrk: "=",
+    bslash: "\\",
+    a: "A",
+    s: "O",
+    d: "E",
+    f: "U",
+    g: "I",
+    h: "D",
+    j: "H",
+    k: "T",
+    l: "N",
+    semi: "S",
+    quote: "−",
+    z: ";",
+    x: "Q",
+    c: "J",
+    v: "K",
+    b: "X",
+    n: "B",
+    m: "M",
+    comma: "W",
+    period: "V",
+    slash: "Z",
+  },
+  colemak: {
+    grave: "`",
+    n1: "!",
+    n2: "@",
+    n3: "#",
+    n4: "$",
+    n5: "%",
+    n6: "^",
+    n7: "&",
+    n8: "*",
+    n9: "(",
+    n0: ")",
+    minus: "−",
+    equal: "=",
+    q: "Q",
+    w: "W",
+    e: "F",
+    r: "P",
+    t: "G",
+    y: "J",
+    u: "L",
+    i: "U",
+    o: "Y",
+    p: ";",
+    lbrk: "[",
+    rbrk: "]",
+    bslash: "\\",
+    a: "A",
+    s: "R",
+    d: "S",
+    f: "T",
+    g: "D",
+    h: "H",
+    j: "N",
+    k: "E",
+    l: "I",
+    semi: "O",
+    quote: "'",
+    z: "Z",
+    x: "X",
+    c: "C",
+    v: "V",
+    b: "B",
+    n: "K",
+    m: "M",
+    comma: ",",
+    period: ".",
+    slash: "/",
+  },
+};
+
+const LAYOUT_OPTIONS: { value: LayoutName; label: string }[] = [
+  { value: "qwerty", label: "QWERTY" },
+  { value: "dvorak", label: "Dvorak" },
+  { value: "colemak", label: "Colemak" },
+];
+
+function buildKeys(layout: LayoutName): KeyDef[] {
+  const labels = { ...FIXED_LABELS, ...VARIABLE_LABELS[layout] };
+  return ALL_SLOT_IDS.map((id) => ({
+    id,
+    label: labels[id] ?? id,
+    w: SLOT_WIDTHS[id],
+  }));
+}
+
+function buildKeyMap(keys: KeyDef[]): Record<string, KeyDef> {
+  return Object.fromEntries(keys.map((k) => [k.id, k]));
+}
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -156,6 +377,7 @@ function shuffle<T>(arr: T[]): T[] {
 // TODO: Wire to real API
 async function submitAttempt(payload: {
   attempt: number;
+  layout: LayoutName;
   placements: Placements;
   correct: number;
   total: number;
@@ -218,10 +440,11 @@ const getState = (
 // --- Component ---
 
 export default function App() {
+  const [layout, setLayout] = useState<LayoutName>("qwerty");
   const [placements, setPlacements] = useState<Placements>({});
   const [locked, setLocked] = useState<Set<string>>(new Set());
   const [results, setResults] = useState<Record<string, never> | null>(null);
-  const [poolOrder, setPoolOrder] = useState<string[]>(() => shuffle(ALL_KEYS.map((k) => k.id)));
+  const [poolOrder, setPoolOrder] = useState<string[]>(() => shuffle(ALL_SLOT_IDS));
   const [selected, setSelected] = useState<string | null>(null);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
@@ -231,6 +454,9 @@ export default function App() {
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerStarted = useRef(false);
+
+  const allKeys = useMemo(() => buildKeys(layout), [layout]);
+  const keyMap = useMemo(() => buildKeyMap(allKeys), [allKeys]);
 
   const startTimer = useCallback(() => {
     if (timerStarted.current) return;
@@ -263,11 +489,11 @@ export default function App() {
   const score = useMemo<Score | null>(() => {
     if (!results) return null;
     let correct = 0;
-    for (const k of ALL_KEYS) {
+    for (const k of allKeys) {
       if (locked.has(k.id) || placements[k.id] === k.id) correct++;
     }
-    return { correct, total: ALL_KEYS.length };
-  }, [results, placements, locked]);
+    return { correct, total: allKeys.length };
+  }, [results, placements, locked, allKeys]);
 
   const placeKey = useCallback(
     (keyId: string, slotId: string, fromSlot: string | null) => {
@@ -370,7 +596,7 @@ export default function App() {
   const check = () => {
     const newLocked = new Set(locked);
     let correct = 0;
-    for (const k of ALL_KEYS) {
+    for (const k of allKeys) {
       if (locked.has(k.id) || placements[k.id] === k.id) {
         newLocked.add(k.id);
         correct++;
@@ -385,15 +611,16 @@ export default function App() {
 
     submitAttempt({
       attempt: nextTry,
+      layout,
       placements: { ...placements },
       correct,
-      total: ALL_KEYS.length,
+      total: allKeys.length,
     });
   };
 
   const reveal = () => {
     const all: Placements = {};
-    for (const k of ALL_KEYS) {
+    for (const k of allKeys) {
       if (!locked.has(k.id)) all[k.id] = k.id;
       else all[k.id] = placements[k.id];
     }
@@ -404,20 +631,27 @@ export default function App() {
     setTries(0);
   };
 
-  const reset = () => {
+  const resetGame = useCallback(() => {
     setPlacements({});
     setLocked(new Set());
     setResults(null);
-    setPoolOrder(shuffle(ALL_KEYS.map((k) => k.id)));
+    setPoolOrder(shuffle(ALL_SLOT_IDS));
     setSelected(null);
     setSelectedSource(null);
     setTries(0);
     setConfirmingReset(false);
     resetTimer();
+  }, [resetTimer]);
+
+  const handleLayoutChange = (next: LayoutName) => {
+    if (next === layout) return;
+    setLayout(next);
+    resetGame();
   };
 
   const allCorrect = score !== null && score.correct === score.total;
   const hasPlaced = Object.keys(placements).length > 0;
+  const gameActive = hasPlaced || locked.size > 0;
 
   useEffect(() => {
     if (allCorrect) stopTimer();
@@ -439,8 +673,27 @@ export default function App() {
         <p className="text-xs text-zinc-400 mt-1.5">
           Drag keycaps to their correct positions — click to select, click slot to place
         </p>
+        {/* Layout selector */}
+        <div className="flex gap-1 my-6 p-1 bg-zinc-200 rounded-lg mx-auto w-fit">
+          {LAYOUT_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => handleLayoutChange(opt.value)}
+              disabled={gameActive && opt.value !== layout}
+              className={`font-mono text-xs px-3 py-1.5 rounded-md transition-all duration-150 tracking-wide ${
+                layout === opt.value
+                  ? "bg-white text-zinc-800 font-semibold shadow-sm"
+                  : gameActive
+                    ? "text-zinc-300 cursor-not-allowed"
+                    : "text-zinc-500 hover:text-zinc-700 cursor-pointer"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
         <p
-          className={`text-sm mt-2 tabular-nums ${allCorrect ? "text-green-700 font-semibold" : "text-zinc-400"}`}
+          className={`text-sm tabular-nums ${allCorrect ? "text-green-700 font-semibold" : "text-zinc-400"}`}
         >
           {formatTime(elapsed)}
         </p>
@@ -451,15 +704,15 @@ export default function App() {
         className="bg-zinc-200 rounded-xl p-2 inline-flex flex-col shadow-md"
         style={{ gap: KEY_GAP }}
       >
-        {ROWS.map((row, ri) => (
+        {BOARD.map((row, ri) => (
           <div key={ri} className="flex" style={{ gap: KEY_GAP }}>
             {row.map((item) => {
-              if (item.spacer) {
+              if ("spacer" in item) {
                 return <div key={item.id} className="shrink-0" style={sz(item.w)} />;
               }
 
               const placedKeyId: string | undefined = placements[item.id];
-              const placedKey: KeyDef | undefined = placedKeyId ? KEY_MAP[placedKeyId] : undefined;
+              const placedKey: KeyDef | undefined = placedKeyId ? keyMap[placedKeyId] : undefined;
               const isLocked = locked.has(item.id);
               const isCorrect = !!results && !isLocked && placedKeyId === item.id;
               const isWrong = !!results && !!placedKeyId && placedKeyId !== item.id;
@@ -521,7 +774,7 @@ export default function App() {
           <>
             <span className="text-sm text-zinc-500 font-medium">Are you sure?</span>
             <button
-              onClick={reset}
+              onClick={resetGame}
               className="font-mono text-sm font-semibold px-5 py-2 rounded-md border-2 border-red-800 bg-red-800 text-white cursor-pointer transition-all duration-150 tracking-wide hover:bg-red-600 hover:border-red-600"
             >
               Yes
@@ -581,7 +834,7 @@ export default function App() {
 
       {/* Pool */}
       {poolKeys.length > 0 && (
-        <div className="max-w-[700px] w-full">
+        <div className="max-w-3xl w-full">
           <div className="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold mb-2 text-center">
             Keycaps ({poolKeys.length} remaining)
           </div>
@@ -592,7 +845,7 @@ export default function App() {
             onDrop={handleDropPool}
           >
             {poolKeys.map((id) => {
-              const key = KEY_MAP[id];
+              const key = keyMap[id];
               const isSelected = selected === id && selectedSource === "pool";
               return (
                 <div
