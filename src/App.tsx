@@ -887,8 +887,8 @@ export default function App() {
     setTries(0);
   };
 
-  const resetGame = useCallback(() => {
-    sfx.reset();
+  const resetGame = useCallback((silent = false) => {
+    if (!silent) sfx.reset();
     setPlacements({});
     setLocked(new Set());
     setResults(null);
@@ -903,7 +903,7 @@ export default function App() {
   const handleLayoutChange = (next: LayoutName) => {
     if (next === layout) return;
     setLayout(next);
-    resetGame();
+    resetGame(true);
   };
 
   const allCorrect = score !== null && score.correct === score.total;
@@ -1051,7 +1051,7 @@ export default function App() {
           <>
             <span className={`text-sm ${t.scoreText} font-medium`}>Are you sure?</span>
             <button
-              onClick={resetGame}
+              onClick={() => resetGame()}
               className={`font-mono text-sm font-semibold px-5 py-2 rounded-md border-2 ${t.btnDanger.border} ${t.btnDanger.bg} ${t.btnDanger.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnDanger.hover} ${t.btnDanger.hoverBorder}`}
             >
               Yes
