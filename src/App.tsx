@@ -969,7 +969,7 @@ export default function App() {
           </div>
         </div>
         <p
-          className={`text-sm tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
+          className={`text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
         >
           {formatTime(elapsed)}
         </p>
