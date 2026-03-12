@@ -71,15 +71,44 @@ const THEMES: Record<ThemeName, ThemeColors> = {
     slotDragOverBorder: "border-blue-400",
     poolBg: "bg-stone-200",
     poolLabel: "text-stone-400",
-    keycap: { bg: "bg-stone-50", border: "border-stone-400", text: "text-stone-800", shadow: "shadow" },
+    keycap: {
+      bg: "bg-stone-50",
+      border: "border-stone-400",
+      text: "text-stone-800",
+      shadow: "shadow",
+    },
     locked: { bg: "bg-green-50", border: "border-green-300", text: "text-green-800" },
     correct: { bg: "bg-green-50", border: "border-green-300", text: "text-green-800" },
     wrong: { bg: "bg-red-50", border: "border-red-300", text: "text-red-900" },
     selected: { bg: "bg-blue-50", border: "border-blue-300", text: "text-blue-800" },
-    btnPrimary: { bg: "bg-stone-800", border: "border-stone-800", text: "text-stone-50", hover: "hover:bg-stone-600", hoverBorder: "hover:border-stone-600" },
-    btnSecondary: { bg: "bg-transparent", border: "border-stone-400", text: "text-stone-500", hover: "hover:text-stone-700", hoverBorder: "hover:border-stone-500" },
-    btnDanger: { bg: "bg-red-800", border: "border-red-800", text: "text-white", hover: "hover:bg-red-600", hoverBorder: "hover:border-red-600" },
-    btnReveal: { bg: "bg-amber-50", border: "border-amber-300", text: "text-amber-700", hover: "hover:bg-amber-100", hoverBorder: "hover:border-amber-400" },
+    btnPrimary: {
+      bg: "bg-stone-800",
+      border: "border-stone-800",
+      text: "text-stone-50",
+      hover: "hover:bg-stone-600",
+      hoverBorder: "hover:border-stone-600",
+    },
+    btnSecondary: {
+      bg: "bg-transparent",
+      border: "border-stone-400",
+      text: "text-stone-500",
+      hover: "hover:text-stone-700",
+      hoverBorder: "hover:border-stone-500",
+    },
+    btnDanger: {
+      bg: "bg-red-800",
+      border: "border-red-800",
+      text: "text-white",
+      hover: "hover:bg-red-600",
+      hoverBorder: "hover:border-red-600",
+    },
+    btnReveal: {
+      bg: "bg-amber-50",
+      border: "border-amber-300",
+      text: "text-amber-700",
+      hover: "hover:bg-amber-100",
+      hoverBorder: "hover:border-amber-400",
+    },
     scoreText: "text-stone-500",
     scoreAccent: "text-green-800",
     scoreMuted: "text-stone-400",
@@ -104,15 +133,44 @@ const THEMES: Record<ThemeName, ThemeColors> = {
     slotDragOverBorder: "border-blue-400",
     poolBg: "bg-zinc-800",
     poolLabel: "text-zinc-500",
-    keycap: { bg: "bg-zinc-700", border: "border-zinc-500", text: "text-zinc-100", shadow: "shadow-md shadow-black/30" },
+    keycap: {
+      bg: "bg-zinc-700",
+      border: "border-zinc-500",
+      text: "text-zinc-100",
+      shadow: "shadow-md shadow-black/30",
+    },
     locked: { bg: "bg-green-900/40", border: "border-green-600", text: "text-green-300" },
     correct: { bg: "bg-green-900/40", border: "border-green-600", text: "text-green-300" },
     wrong: { bg: "bg-red-900/40", border: "border-red-500", text: "text-red-300" },
     selected: { bg: "bg-blue-900/40", border: "border-blue-400", text: "text-blue-300" },
-    btnPrimary: { bg: "bg-zinc-100", border: "border-zinc-100", text: "text-zinc-900", hover: "hover:bg-zinc-300", hoverBorder: "hover:border-zinc-300" },
-    btnSecondary: { bg: "bg-transparent", border: "border-zinc-600", text: "text-zinc-400", hover: "hover:text-zinc-200", hoverBorder: "hover:border-zinc-500" },
-    btnDanger: { bg: "bg-red-700", border: "border-red-700", text: "text-white", hover: "hover:bg-red-600", hoverBorder: "hover:border-red-600" },
-    btnReveal: { bg: "bg-amber-900/30", border: "border-amber-600", text: "text-amber-400", hover: "hover:bg-amber-900/50", hoverBorder: "hover:border-amber-500" },
+    btnPrimary: {
+      bg: "bg-zinc-100",
+      border: "border-zinc-100",
+      text: "text-zinc-900",
+      hover: "hover:bg-zinc-300",
+      hoverBorder: "hover:border-zinc-300",
+    },
+    btnSecondary: {
+      bg: "bg-transparent",
+      border: "border-zinc-600",
+      text: "text-zinc-400",
+      hover: "hover:text-zinc-200",
+      hoverBorder: "hover:border-zinc-500",
+    },
+    btnDanger: {
+      bg: "bg-red-700",
+      border: "border-red-700",
+      text: "text-white",
+      hover: "hover:bg-red-600",
+      hoverBorder: "hover:border-red-600",
+    },
+    btnReveal: {
+      bg: "bg-amber-900/30",
+      border: "border-amber-600",
+      text: "text-amber-400",
+      hover: "hover:bg-amber-900/50",
+      hoverBorder: "hover:border-amber-500",
+    },
     scoreText: "text-zinc-400",
     scoreAccent: "text-green-400",
     scoreMuted: "text-zinc-500",
@@ -137,15 +195,44 @@ const THEMES: Record<ThemeName, ThemeColors> = {
     slotDragOverBorder: "border-fuchsia-400",
     poolBg: "bg-[#1a0a2e]/80",
     poolLabel: "text-purple-400/70",
-    keycap: { bg: "bg-[#1e1040]", border: "border-fuchsia-600", text: "text-cyan-300", shadow: "shadow-md shadow-fuchsia-500/30" },
+    keycap: {
+      bg: "bg-[#1e1040]",
+      border: "border-fuchsia-600",
+      text: "text-cyan-300",
+      shadow: "shadow-md shadow-fuchsia-500/30",
+    },
     locked: { bg: "bg-cyan-900/30", border: "border-cyan-400", text: "text-cyan-300" },
     correct: { bg: "bg-cyan-900/30", border: "border-cyan-400", text: "text-cyan-300" },
     wrong: { bg: "bg-pink-900/40", border: "border-pink-500", text: "text-pink-300" },
     selected: { bg: "bg-fuchsia-900/40", border: "border-fuchsia-400", text: "text-fuchsia-200" },
-    btnPrimary: { bg: "bg-fuchsia-600", border: "border-fuchsia-500", text: "text-white", hover: "hover:bg-fuchsia-500", hoverBorder: "hover:border-fuchsia-400" },
-    btnSecondary: { bg: "bg-transparent", border: "border-purple-600", text: "text-purple-300", hover: "hover:text-fuchsia-300", hoverBorder: "hover:border-fuchsia-500" },
-    btnDanger: { bg: "bg-pink-700", border: "border-pink-600", text: "text-white", hover: "hover:bg-pink-600", hoverBorder: "hover:border-pink-500" },
-    btnReveal: { bg: "bg-cyan-900/30", border: "border-cyan-500", text: "text-cyan-300", hover: "hover:bg-cyan-900/50", hoverBorder: "hover:border-cyan-400" },
+    btnPrimary: {
+      bg: "bg-fuchsia-600",
+      border: "border-fuchsia-500",
+      text: "text-white",
+      hover: "hover:bg-fuchsia-500",
+      hoverBorder: "hover:border-fuchsia-400",
+    },
+    btnSecondary: {
+      bg: "bg-transparent",
+      border: "border-purple-600",
+      text: "text-purple-300",
+      hover: "hover:text-fuchsia-300",
+      hoverBorder: "hover:border-fuchsia-500",
+    },
+    btnDanger: {
+      bg: "bg-pink-700",
+      border: "border-pink-600",
+      text: "text-white",
+      hover: "hover:bg-pink-600",
+      hoverBorder: "hover:border-pink-500",
+    },
+    btnReveal: {
+      bg: "bg-cyan-900/30",
+      border: "border-cyan-500",
+      text: "text-cyan-300",
+      hover: "hover:bg-cyan-900/50",
+      hoverBorder: "hover:border-cyan-400",
+    },
     scoreText: "text-purple-300",
     scoreAccent: "text-cyan-400",
     scoreMuted: "text-purple-500",
@@ -733,7 +820,8 @@ export default function App() {
     if (!results) return null;
     let correct = 0;
     for (const k of allKeys) {
-      if (locked.has(k.id) || (placements[k.id] && isCorrectPlacement(k.id, placements[k.id]))) correct++;
+      if (locked.has(k.id) || (placements[k.id] && isCorrectPlacement(k.id, placements[k.id])))
+        correct++;
     }
     return { correct, total: allKeys.length };
   }, [results, placements, locked, allKeys, isCorrectPlacement]);
@@ -887,18 +975,21 @@ export default function App() {
     setTries(0);
   };
 
-  const resetGame = useCallback((silent = false) => {
-    if (!silent) sfx.reset();
-    setPlacements({});
-    setLocked(new Set());
-    setResults(null);
-    setPoolOrder(shuffle(ALL_SLOT_IDS));
-    setSelected(null);
-    setSelectedSource(null);
-    setTries(0);
-    setConfirmingReset(false);
-    resetTimer();
-  }, [resetTimer]);
+  const resetGame = useCallback(
+    (silent = false) => {
+      if (!silent) sfx.reset();
+      setPlacements({});
+      setLocked(new Set());
+      setResults(null);
+      setPoolOrder(shuffle(ALL_SLOT_IDS));
+      setSelected(null);
+      setSelectedSource(null);
+      setTries(0);
+      setConfirmingReset(false);
+      resetTimer();
+    },
+    [resetTimer],
+  );
 
   const handleLayoutChange = (next: LayoutName) => {
     if (next === layout) return;
@@ -923,12 +1014,14 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen ${t.page} flex flex-col items-center px-4 py-6 font-mono transition-colors duration-300`}>
+    <div
+      className={`min-h-screen ${t.page} flex flex-col items-center px-4 py-6 font-mono transition-colors duration-300`}
+    >
       {/* Header */}
       <div className="text-center mb-7">
         <h1 className={`text-xl font-semibold ${t.title} tracking-tight`}>keycapped</h1>
         <p className={`text-xs ${t.subtitle} mt-1.5`}>
-          All your keycaps fell off. Can you put them back?
+          All your keys fell off. Can you put them back?
         </p>
         {/* Selectors */}
         <div className="flex gap-3 my-6 justify-center flex-wrap">
@@ -990,8 +1083,10 @@ export default function App() {
               const placedKeyId: string | undefined = placements[item.id];
               const placedKey: KeyDef | undefined = placedKeyId ? keyMap[placedKeyId] : undefined;
               const isLocked = locked.has(item.id);
-              const isCorrect = !!results && !isLocked && !!placedKeyId && isCorrectPlacement(item.id, placedKeyId);
-              const isWrong = !!results && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
+              const isCorrect =
+                !!results && !isLocked && !!placedKeyId && isCorrectPlacement(item.id, placedKeyId);
+              const isWrong =
+                !!results && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
               const isSelected = selected !== null && selectedSource === item.id;
               const isDragOver = hoveredSlot === item.id;
 
@@ -1091,9 +1186,7 @@ export default function App() {
               </button>
             )}
             {score && (
-              <div
-                className={`text-sm font-semibold ${allCorrect ? t.scoreAccent : t.scoreText}`}
-              >
+              <div className={`text-sm font-semibold ${allCorrect ? t.scoreAccent : t.scoreText}`}>
                 {allCorrect ? (
                   <span>✓ Perfect — all {score.total} keys correct</span>
                 ) : (
@@ -1112,7 +1205,9 @@ export default function App() {
       {/* Pool */}
       {poolKeys.length > 0 && (
         <div className="max-w-3xl w-full">
-          <div className={`text-[10px] ${t.poolLabel} uppercase tracking-widest font-semibold mb-2 text-center`}>
+          <div
+            className={`text-[10px] ${t.poolLabel} uppercase tracking-widest font-semibold mb-2 text-center`}
+          >
             Keycaps ({poolKeys.length} remaining)
           </div>
           <div
@@ -1142,7 +1237,9 @@ export default function App() {
       )}
 
       {allCorrect && (
-        <div className={`mt-5 px-6 py-3 ${t.successBg} rounded-lg ${t.successText} text-sm font-medium text-center`}>
+        <div
+          className={`mt-5 px-6 py-3 ${t.successBg} rounded-lg ${t.successText} text-sm font-medium text-center`}
+        >
           You know your keyboard. Well done in {formatTime(elapsed)}.
         </div>
       )}
