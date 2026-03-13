@@ -608,14 +608,18 @@ const LAYOUT_OPTIONS: { value: LayoutName; label: string }[] = [
 const MAC_DISABLED_KEYS = new Set(["del"]);
 
 function buildKeys(layout: LayoutName, platform: PlatformName = "windows"): KeyDef[] {
-  const labels = { ...FIXED_LABELS, ...VARIABLE_LABELS[layout], ...(platform === "mac" ? MAC_LABELS : {}) };
-  return ALL_SLOT_IDS
-    .filter((id) => !(platform === "mac" && MAC_DISABLED_KEYS.has(id)))
-    .map((id) => ({
+  const labels = {
+    ...FIXED_LABELS,
+    ...VARIABLE_LABELS[layout],
+    ...(platform === "mac" ? MAC_LABELS : {}),
+  };
+  return ALL_SLOT_IDS.filter((id) => !(platform === "mac" && MAC_DISABLED_KEYS.has(id))).map(
+    (id) => ({
       id,
       label: labels[id] ?? id,
       w: SLOT_WIDTHS[id],
-    }));
+    }),
+  );
 }
 
 function buildKeyMap(keys: KeyDef[]): Record<string, KeyDef> {
@@ -1173,7 +1177,29 @@ export default function App() {
                 : `${t.selectorBg} ${t.selectorInactive} hover:opacity-80 cursor-pointer`
             }`}
           >
-            <svg width="12" height="12" viewBox="0 0 12 12" className="shrink-0"><rect x="0.5" y="0.5" width="11" height="11" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.4"/>{hardMode && <path d="M2.5 6l2.5 2.5 4.5-4.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}</svg>
+            <svg width="12" height="12" viewBox="0 0 12 12" className="shrink-0">
+              <rect
+                x="0.5"
+                y="0.5"
+                width="11"
+                height="11"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                opacity="0.4"
+              />
+              {hardMode && (
+                <path
+                  d="M2.5 6l2.5 2.5 4.5-4.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+            </svg>
             Hard
           </button>
         </div>
@@ -1185,88 +1211,94 @@ export default function App() {
       </div>
 
       {/* Keyboard */}
-      <div className="w-full overflow-x-auto flex justify-center" style={{ scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}>
       <div
-        className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-colors duration-300`}
-        style={{ gap: KEY_GAP }}
+        className="w-full overflow-x-auto flex justify-center"
+        style={{ scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}
       >
-        {BOARD.map((row, ri) => (
-          <div key={ri} className="flex" style={{ gap: KEY_GAP }}>
-            {row.map((item) => {
-              if ("spacer" in item) {
-                return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
-              }
+        <div
+          className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-colors duration-300`}
+          style={{ gap: KEY_GAP }}
+        >
+          {BOARD.map((row, ri) => (
+            <div key={ri} className="flex" style={{ gap: KEY_GAP }}>
+              {row.map((item) => {
+                if ("spacer" in item) {
+                  return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
+                }
 
-              if (!activeIds.has(item.id)) {
-                return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
-              }
+                if (!activeIds.has(item.id)) {
+                  return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
+                }
 
-              const placedKeyId: string | undefined = placements[item.id];
-              const placedKey: KeyDef | undefined = placedKeyId ? keyMap[placedKeyId] : undefined;
-              const isLocked = locked.has(item.id);
-              const isCorrect =
-                !!results && !isLocked && !!placedKeyId && isCorrectPlacement(item.id, placedKeyId);
-              const isWrong =
-                !!results && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
-              const isSelected = selected !== null && selectedSource === item.id;
-              const isDragOver = hoveredSlot === item.id;
+                const placedKeyId: string | undefined = placements[item.id];
+                const placedKey: KeyDef | undefined = placedKeyId ? keyMap[placedKeyId] : undefined;
+                const isLocked = locked.has(item.id);
+                const isCorrect =
+                  !!results &&
+                  !isLocked &&
+                  !!placedKeyId &&
+                  isCorrectPlacement(item.id, placedKeyId);
+                const isWrong =
+                  !!results && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
+                const isSelected = selected !== null && selectedSource === item.id;
+                const isDragOver = hoveredSlot === item.id;
 
-              if (!placedKey) {
+                if (!placedKey) {
+                  return (
+                    <div
+                      key={item.id}
+                      className={slotCls(isDragOver, selected !== null, t)}
+                      style={keySize(item.w)}
+                      onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
+                        e.preventDefault();
+                        setHoveredSlot(item.id);
+                      }}
+                      onDragLeave={() => setHoveredSlot(null)}
+                      onDrop={handleDropSlot(item.id)}
+                      onClick={() => {
+                        setConfirmingReset(false);
+                        if (selected && selectedSource) {
+                          placeKey(selected, item.id, selectedSource);
+                          sfx.drop();
+                          setSelected(null);
+                          setSelectedSource(null);
+                        }
+                      }}
+                    />
+                  );
+                }
+
+                const state = getState(
+                  hardMode ? false : isLocked,
+                  hardMode ? false : isCorrect,
+                  hardMode ? false : isWrong,
+                  isSelected,
+                  isDragOver,
+                );
+
                 return (
                   <div
                     key={item.id}
-                    className={slotCls(isDragOver, selected !== null, t)}
-                    style={keySize(item.w)}
+                    draggable={!isLocked}
+                    onDragStart={handleDragStart(placedKeyId, item.id)}
                     onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
                       e.preventDefault();
                       setHoveredSlot(item.id);
                     }}
                     onDragLeave={() => setHoveredSlot(null)}
                     onDrop={handleDropSlot(item.id)}
-                    onClick={() => {
-                      setConfirmingReset(false);
-                      if (selected && selectedSource) {
-                        placeKey(selected, item.id, selectedSource);
-                        sfx.drop();
-                        setSelected(null);
-                        setSelectedSource(null);
-                      }
-                    }}
-                  />
+                    onClick={() => handleSlotClick(item.id)}
+                    onDoubleClick={() => !isLocked && removeFromSlot(item.id)}
+                    className={keycapCls(state, t)}
+                    style={{ ...keySize(item.w), fontSize: item.w > 1.5 ? 11 : 12 }}
+                  >
+                    {placedKey.label}
+                  </div>
                 );
-              }
-
-              const state = getState(
-                hardMode ? false : isLocked,
-                hardMode ? false : isCorrect,
-                hardMode ? false : isWrong,
-                isSelected,
-                isDragOver,
-              );
-
-              return (
-                <div
-                  key={item.id}
-                  draggable={!isLocked}
-                  onDragStart={handleDragStart(placedKeyId, item.id)}
-                  onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
-                    e.preventDefault();
-                    setHoveredSlot(item.id);
-                  }}
-                  onDragLeave={() => setHoveredSlot(null)}
-                  onDrop={handleDropSlot(item.id)}
-                  onClick={() => handleSlotClick(item.id)}
-                  onDoubleClick={() => !isLocked && removeFromSlot(item.id)}
-                  className={keycapCls(state, t)}
-                  style={{ ...keySize(item.w), fontSize: item.w > 1.5 ? 11 : 12 }}
-                >
-                  {placedKey.label}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+              })}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Controls */}
