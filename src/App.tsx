@@ -1387,6 +1387,9 @@ export default function App() {
                     <span className={`${t.scoreMuted} font-normal ml-1.5`}>correct</span>
                   </span>
                 )}
+                <span className={`${t.scoreMuted} font-normal ml-2`}>
+                  ({tries} {tries === 1 ? "attempt" : "attempts"})
+                </span>
               </div>
             )}
           </>
@@ -1431,7 +1434,7 @@ export default function App() {
         <div
           className={`mt-5 px-6 py-3 ${t.successBg} rounded-lg ${t.successText} text-sm font-medium text-center`}
         >
-          You know your keyboard. Well done in {formatTime(elapsed)}.
+          You know your keyboard. Well done!
         </div>
       )}
     </div>
