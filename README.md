@@ -4,11 +4,6 @@ How well do you really know your keyboard? Keycapped strips every key from a 75%
 
 ![keycapped screenshot](/assets/screenshot.png)
 
-## Prerequisites
-
-- Node.js 18+
-- npm, yarn, or pnpm
-
 ## Setup
 
 ```bash
