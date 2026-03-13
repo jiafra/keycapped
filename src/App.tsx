@@ -59,6 +59,8 @@ interface ThemeColors {
   selectorActiveText: string;
   selectorInactive: string;
   selectorDisabled: string;
+  scrollbarThumb: string;
+  scrollbarTrack: string;
 }
 
 const THEMES: Record<ThemeName, ThemeColors> = {
@@ -123,6 +125,8 @@ const THEMES: Record<ThemeName, ThemeColors> = {
     selectorActiveText: "text-stone-800",
     selectorInactive: "text-stone-600",
     selectorDisabled: "text-stone-400",
+    scrollbarThumb: "#a8a29e",
+    scrollbarTrack: "#e7e5e4",
   },
   dark: {
     page: "bg-zinc-900",
@@ -185,6 +189,8 @@ const THEMES: Record<ThemeName, ThemeColors> = {
     selectorActiveText: "text-zinc-100",
     selectorInactive: "text-zinc-400",
     selectorDisabled: "text-zinc-600",
+    scrollbarThumb: "#52525b",
+    scrollbarTrack: "#27272a",
   },
   retro: {
     page: "bg-[#0a0a1a]",
@@ -247,6 +253,8 @@ const THEMES: Record<ThemeName, ThemeColors> = {
     selectorActiveText: "text-white",
     selectorInactive: "text-purple-400",
     selectorDisabled: "text-purple-700",
+    scrollbarThumb: "#a855f7",
+    scrollbarTrack: "#1a0a2e",
   },
 };
 
@@ -1177,6 +1185,7 @@ export default function App() {
       </div>
 
       {/* Keyboard */}
+      <div className="w-full overflow-x-auto flex justify-center" style={{ scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}>
       <div
         className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-colors duration-300`}
         style={{ gap: KEY_GAP }}
@@ -1257,6 +1266,7 @@ export default function App() {
             })}
           </div>
         ))}
+      </div>
       </div>
 
       {/* Controls */}
