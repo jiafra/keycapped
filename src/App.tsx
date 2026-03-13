@@ -584,13 +584,6 @@ const MAC_LABELS: Record<string, string> = {
   ralt: "⌘",
   fn: "⌥",
   rctrl: "⌃",
-  del: "⌫",
-  caps: "⇪",
-  lshift: "⇧",
-  rshift: "⇧",
-  enter: "⏎",
-  tab: "⇥",
-  bksp: "⌫",
 };
 
 const PLATFORM_OPTIONS: { value: PlatformName; label: string }[] = [
@@ -604,13 +597,17 @@ const LAYOUT_OPTIONS: { value: LayoutName; label: string }[] = [
   { value: "colemak", label: "Colemak" },
 ];
 
+const MAC_DISABLED_KEYS = new Set(["del"]);
+
 function buildKeys(layout: LayoutName, platform: PlatformName = "windows"): KeyDef[] {
   const labels = { ...FIXED_LABELS, ...VARIABLE_LABELS[layout], ...(platform === "mac" ? MAC_LABELS : {}) };
-  return ALL_SLOT_IDS.map((id) => ({
-    id,
-    label: labels[id] ?? id,
-    w: SLOT_WIDTHS[id],
-  }));
+  return ALL_SLOT_IDS
+    .filter((id) => !(platform === "mac" && MAC_DISABLED_KEYS.has(id)))
+    .map((id) => ({
+      id,
+      label: labels[id] ?? id,
+      w: SLOT_WIDTHS[id],
+    }));
 }
 
 function buildKeyMap(keys: KeyDef[]): Record<string, KeyDef> {
@@ -831,6 +828,7 @@ export default function App() {
 
   const allKeys = useMemo(() => buildKeys(layout, platform), [layout, platform]);
   const keyMap = useMemo(() => buildKeyMap(allKeys), [allKeys]);
+  const activeIds = useMemo(() => new Set(allKeys.map((k) => k.id)), [allKeys]);
 
   // Keys with the same label are interchangeable (e.g. lshift/rshift, lctrl/rctrl)
   const isCorrectPlacement = useCallback(
@@ -867,8 +865,8 @@ export default function App() {
 
   const placedSet = useMemo(() => new Set(Object.values(placements)), [placements]);
   const poolKeys = useMemo(
-    () => poolOrder.filter((id) => !placedSet.has(id)),
-    [poolOrder, placedSet],
+    () => poolOrder.filter((id) => !placedSet.has(id) && activeIds.has(id)),
+    [poolOrder, placedSet, activeIds],
   );
 
   const score = useMemo<Score | null>(() => {
@@ -1187,6 +1185,10 @@ export default function App() {
           <div key={ri} className="flex" style={{ gap: KEY_GAP }}>
             {row.map((item) => {
               if ("spacer" in item) {
+                return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
+              }
+
+              if (!activeIds.has(item.id)) {
                 return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
               }
 
