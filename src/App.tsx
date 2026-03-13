@@ -1238,11 +1238,11 @@ export default function App() {
 
       {/* Keyboard */}
       <div
-        className="w-full overflow-x-auto flex justify-center"
+        className="w-full overflow-x-auto flex"
         style={{ scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}
       >
         <div
-          className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-colors duration-300`}
+          className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-colors duration-300 mx-auto shrink-0`}
           style={{ gap: KEY_GAP }}
         >
           {BOARD.map((row, ri) => (
