@@ -783,6 +783,14 @@ export default function App() {
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const [tries, setTries] = useState(0);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [hardMode, setHardMode] = useState<boolean>(() => {
+    return localStorage.getItem("keycapped-hard") === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("keycapped-hard", String(hardMode));
+  }, [hardMode]);
+
   const dragRef = useRef<DragData>({ key: null, source: null });
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -951,7 +959,7 @@ export default function App() {
     let correct = 0;
     for (const k of allKeys) {
       if (locked.has(k.id) || (placements[k.id] && isCorrectPlacement(k.id, placements[k.id]))) {
-        newLocked.add(k.id);
+        if (!hardMode) newLocked.add(k.id);
         correct++;
       }
     }
@@ -1088,6 +1096,22 @@ export default function App() {
               </button>
             ))}
           </div>
+          {/* Hard mode toggle */}
+          <button
+            onClick={() => {
+              setHardMode((v) => !v);
+              setLocked(new Set());
+              setResults(null);
+            }}
+            className={`flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 rounded-lg transition-all duration-150 tracking-wide ${
+              hardMode
+                ? `${t.selectorActive} ${t.selectorActiveText} font-semibold shadow-sm`
+                : `${t.selectorBg} ${t.selectorInactive} hover:opacity-80 cursor-pointer`
+            }`}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" className="shrink-0"><rect x="0.5" y="0.5" width="11" height="11" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.4"/>{hardMode && <path d="M2.5 6l2.5 2.5 4.5-4.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>}</svg>
+            Hard
+          </button>
         </div>
         <p
           className={`text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
@@ -1143,7 +1167,13 @@ export default function App() {
                 );
               }
 
-              const state = getState(isLocked, isCorrect, isWrong, isSelected, isDragOver);
+              const state = getState(
+                hardMode ? false : isLocked,
+                hardMode ? false : isCorrect,
+                hardMode ? false : isWrong,
+                isSelected,
+                isDragOver,
+              );
 
               return (
                 <div
