@@ -637,18 +637,41 @@ function shuffle<T>(arr: T[]): T[] {
 
 // --- API ---
 
-// TODO: Wire to real API
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+
 async function submitAttempt(payload: {
   attempt: number;
   layout: LayoutName;
+  platform: PlatformName;
+  hardMode: boolean;
   placements: Placements;
   correct: number;
   total: number;
 }): Promise<void> {
-  // Mock — replace with actual fetch call
-  // e.g. await fetch('/api/attempts', { method: 'POST', body: JSON.stringify(payload) })
-  console.log("[mock] submitAttempt", payload);
-  return new Promise((resolve) => setTimeout(resolve, 100));
+  const body = {
+    attempt: payload.attempt,
+    layout: payload.layout,
+    platform: payload.platform,
+    hard_mode: payload.hardMode,
+    placements: payload.placements,
+    correct: payload.correct,
+    total: payload.total,
+  };
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/attempts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    console.error("Failed to submit attempt:", res.status, await res.text());
+  }
 }
 
 // --- Sound ---
@@ -1022,6 +1045,8 @@ export default function App() {
     submitAttempt({
       attempt: nextTry,
       layout,
+      platform,
+      hardMode,
       placements: { ...placements },
       correct,
       total: allKeys.length,
