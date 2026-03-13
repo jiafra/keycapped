@@ -1202,7 +1202,12 @@ export default function App() {
             </button>
             <button
               onClick={() => setConfirmingReset(true)}
-              className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`}
+              disabled={!gameActive}
+              className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} transition-all duration-150 tracking-wide ${
+                gameActive
+                  ? `cursor-pointer ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`
+                  : "cursor-not-allowed opacity-40"
+              }`}
             >
               Reset
             </button>
