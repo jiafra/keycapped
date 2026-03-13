@@ -645,7 +645,6 @@ async function submitAttempt(payload: {
   layout: LayoutName;
   platform: PlatformName;
   hardMode: boolean;
-  placements: Placements;
   correct: number;
   total: number;
 }): Promise<void> {
@@ -654,7 +653,6 @@ async function submitAttempt(payload: {
     layout: payload.layout,
     platform: payload.platform,
     hard_mode: payload.hardMode,
-    placements: payload.placements,
     correct: payload.correct,
     total: payload.total,
   };
@@ -1047,7 +1045,6 @@ export default function App() {
       layout,
       platform,
       hardMode,
-      placements: { ...placements },
       correct,
       total: allKeys.length,
     });
