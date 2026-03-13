@@ -1196,6 +1196,7 @@ export default function App() {
               setLocked(new Set());
               setResults(null);
             }}
+            title="No hints - keys won't lock or highlight after checking"
             className={`flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 rounded-lg transition-all duration-150 tracking-wide ${
               hardMode
                 ? `${t.selectorActive} ${t.selectorActiveText} font-semibold shadow-sm`
