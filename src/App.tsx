@@ -1346,9 +1346,9 @@ export default function App() {
           <>
             <button
               onClick={check}
-              disabled={!hasPlaced}
+              disabled={!hasPlaced || allCorrect}
               className={`font-mono text-sm font-semibold px-6 py-2 rounded-md border-2 ${t.btnPrimary.border} ${t.btnPrimary.bg} ${t.btnPrimary.text} tracking-wide transition-all duration-150 ${
-                hasPlaced
+                hasPlaced && !allCorrect
                   ? `cursor-pointer ${t.btnPrimary.hover} ${t.btnPrimary.hoverBorder}`
                   : "cursor-not-allowed opacity-40"
               }`}
