@@ -23,6 +23,8 @@ interface KeyDef {
 
 type LayoutName = "qwerty" | "dvorak" | "colemak";
 
+type PlatformName = "windows" | "mac";
+
 type ThemeName = "light" | "dark" | "retro";
 
 interface ThemeColors {
@@ -575,14 +577,35 @@ const VARIABLE_LABELS: Record<LayoutName, Record<string, string>> = {
   },
 };
 
+const MAC_LABELS: Record<string, string> = {
+  lctrl: "⌃",
+  lwin: "⌥",
+  lalt: "⌘",
+  ralt: "⌘",
+  fn: "⌥",
+  rctrl: "⌃",
+  del: "⌫",
+  caps: "⇪",
+  lshift: "⇧",
+  rshift: "⇧",
+  enter: "⏎",
+  tab: "⇥",
+  bksp: "⌫",
+};
+
+const PLATFORM_OPTIONS: { value: PlatformName; label: string }[] = [
+  { value: "windows", label: "PC" },
+  { value: "mac", label: "Mac" },
+];
+
 const LAYOUT_OPTIONS: { value: LayoutName; label: string }[] = [
   { value: "qwerty", label: "QWERTY" },
   { value: "dvorak", label: "Dvorak" },
   { value: "colemak", label: "Colemak" },
 ];
 
-function buildKeys(layout: LayoutName): KeyDef[] {
-  const labels = { ...FIXED_LABELS, ...VARIABLE_LABELS[layout] };
+function buildKeys(layout: LayoutName, platform: PlatformName = "windows"): KeyDef[] {
+  const labels = { ...FIXED_LABELS, ...VARIABLE_LABELS[layout], ...(platform === "mac" ? MAC_LABELS : {}) };
   return ALL_SLOT_IDS.map((id) => ({
     id,
     label: labels[id] ?? id,
@@ -765,6 +788,16 @@ export default function App() {
     localStorage.setItem("keycapped-theme", theme);
   }, [theme]);
   const t = THEMES[theme];
+  const [platform, setPlatform] = useState<PlatformName>(() => {
+    const saved = localStorage.getItem("keycapped-platform");
+    if (saved === "windows" || saved === "mac") return saved;
+    return navigator.platform?.toLowerCase().includes("mac") ? "mac" : "windows";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("keycapped-platform", platform);
+  }, [platform]);
+
   const [layout, setLayout] = useState<LayoutName>(() => {
     const saved = localStorage.getItem("keycapped-layout");
     if (saved === "qwerty" || saved === "dvorak" || saved === "colemak") return saved;
@@ -796,7 +829,7 @@ export default function App() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerStarted = useRef(false);
 
-  const allKeys = useMemo(() => buildKeys(layout), [layout]);
+  const allKeys = useMemo(() => buildKeys(layout, platform), [layout, platform]);
   const keyMap = useMemo(() => buildKeyMap(allKeys), [allKeys]);
 
   // Keys with the same label are interchangeable (e.g. lshift/rshift, lctrl/rctrl)
@@ -1020,6 +1053,12 @@ export default function App() {
     resetGame(true);
   };
 
+  const handlePlatformChange = (next: PlatformName) => {
+    if (next === platform) return;
+    setPlatform(next);
+    resetGame(true);
+  };
+
   const allCorrect = score !== null && score.correct === score.total;
   const hasPlaced = Object.keys(placements).length > 0;
   const gameActive = hasPlaced || locked.size > 0;
@@ -1070,6 +1109,25 @@ export default function App() {
                 disabled={gameActive && opt.value !== layout}
                 className={`font-mono text-xs px-3 py-1.5 rounded-md transition-all duration-150 tracking-wide ${
                   layout === opt.value
+                    ? `${t.selectorActive} ${t.selectorActiveText} font-semibold shadow-sm`
+                    : gameActive
+                      ? `${t.selectorDisabled} cursor-not-allowed`
+                      : `${t.selectorInactive} hover:opacity-80 cursor-pointer`
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {/* Platform selector */}
+          <div className={`flex gap-1 p-1 ${t.selectorBg} rounded-lg w-fit`}>
+            {PLATFORM_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handlePlatformChange(opt.value)}
+                disabled={gameActive && opt.value !== platform}
+                className={`font-mono text-xs px-3 py-1.5 rounded-md transition-all duration-150 tracking-wide ${
+                  platform === opt.value
                     ? `${t.selectorActive} ${t.selectorActiveText} font-semibold shadow-sm`
                     : gameActive
                       ? `${t.selectorDisabled} cursor-not-allowed`
