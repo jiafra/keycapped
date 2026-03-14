@@ -1145,7 +1145,7 @@ export default function App() {
 
   return (
     <div
-      className={`h-screen ${t.page} flex flex-col font-mono transition-colors duration-300 overflow-hidden`}
+      className={`h-screen ${t.page} flex flex-col font-mono transition-colors duration-300 overflow-hidden select-none`}
     >
       {/* ===== TOP BAR ===== */}
       <header className="relative flex items-center justify-between px-6 py-3 shrink-0">
