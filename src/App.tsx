@@ -1198,6 +1198,11 @@ export default function App() {
         <div className="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex-col items-center">
           <p
             className={`text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
+            style={
+              hardMode
+                ? { animation: allCorrect ? "fire-text-pulse-green 2s ease-in-out infinite" : "fire-text-pulse 2s ease-in-out infinite" }
+                : undefined
+            }
           >
             {formatTime(elapsed)}
           </p>
@@ -1206,12 +1211,19 @@ export default function App() {
         {/* Timer - right on mobile */}
         <p
           className={`sm:hidden text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
+          style={
+            hardMode
+              ? { animation: allCorrect ? "fire-text-pulse-green 2s ease-in-out infinite" : "fire-text-pulse 2s ease-in-out infinite" }
+              : undefined
+          }
         >
           {formatTime(elapsed)}
         </p>
 
         {/* Worldwide attempts - right, hidden on mobile */}
-        <p className={`hidden sm:block text-xs ${t.subtitle} tabular-nums font-bold tracking-wide opacity-60`}>
+        <p
+          className={`hidden sm:block text-xs ${t.subtitle} tabular-nums font-bold tracking-wide opacity-60`}
+        >
           {totalAttempts !== null ? `${totalAttempts.toLocaleString()} attempts worldwide` : "..."}
         </p>
       </header>
@@ -1494,7 +1506,9 @@ export default function App() {
             <polyline points="18 15 12 9 6 15" />
           </svg>
         </button>
-        <div className={`${footerOpen ? "flex" : "hidden"} sm:flex px-6 py-3 gap-2 flex-wrap items-center justify-center`}>
+        <div
+          className={`${footerOpen ? "flex" : "hidden"} sm:flex px-6 py-3 gap-2 flex-wrap items-center justify-center`}
+        >
           <div className={`flex gap-1 p-1 ${t.selectorBg} rounded-lg w-fit`}>
             {LAYOUT_OPTIONS.map((opt) => (
               <button
