@@ -872,6 +872,7 @@ export default function App() {
   const [tries, setTries] = useState(0);
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [fireRoar, setFireRoar] = useState(false);
+  const roarTimer = useRef<ReturnType<typeof setTimeout>>(null);
   const [hardMode, setHardMode] = useState<boolean>(() => {
     return localStorage.getItem("keycapped-hard") === "true";
   });
@@ -1067,8 +1068,12 @@ export default function App() {
     }
 
     if (hardMode) {
-      setFireRoar(true);
-      setTimeout(() => setFireRoar(false), 800);
+      if (roarTimer.current) clearTimeout(roarTimer.current);
+      setFireRoar(false);
+      requestAnimationFrame(() => {
+        setFireRoar(true);
+        roarTimer.current = setTimeout(() => setFireRoar(false), 800);
+      });
     }
 
     submitAttempt({
