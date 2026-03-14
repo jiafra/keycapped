@@ -1383,47 +1383,50 @@ export default function App() {
       </div>
 
       {/* Controls */}
-      <div className="flex items-center gap-4 my-5 flex-wrap justify-center min-h-[38px]">
-        {confirmingReset ? (
+      <div className="relative flex flex-col items-center my-5">
+        {confirmingReset && (
           <>
-            <span className={`text-sm ${t.scoreText} font-medium`}>Are you sure?</span>
+            <div className="fixed inset-0 z-10" onClick={() => setConfirmingReset(false)} />
+            <div className={`absolute bottom-full mb-2 z-20 flex items-center gap-3 px-4 py-2 rounded-lg shadow-lg ${t.board} border ${t.btnSecondary.border}`}>
+            <span className={`text-sm ${t.scoreText} font-medium whitespace-nowrap`}>Are you sure?</span>
             <button
               onClick={() => resetGame()}
-              className={`font-mono text-sm font-semibold px-5 py-2 rounded-md border-2 ${t.btnDanger.border} ${t.btnDanger.bg} ${t.btnDanger.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnDanger.hover} ${t.btnDanger.hoverBorder}`}
+              className={`font-mono text-xs font-semibold px-3 py-1 rounded-md border-2 ${t.btnDanger.border} ${t.btnDanger.bg} ${t.btnDanger.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnDanger.hover} ${t.btnDanger.hoverBorder}`}
             >
               Yes
             </button>
             <button
               onClick={() => setConfirmingReset(false)}
-              className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`}
+              className={`font-mono text-xs font-medium px-3 py-1 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`}
             >
               No
             </button>
+          </div>
           </>
-        ) : (
-          <>
-            <button
-              onClick={check}
-              disabled={!hasPlaced || allCorrect}
-              className={`font-mono text-sm font-semibold px-6 py-2 rounded-md border-2 ${t.btnPrimary.border} ${t.btnPrimary.bg} ${t.btnPrimary.text} tracking-wide transition-all duration-150 ${
-                hasPlaced && !allCorrect
-                  ? `cursor-pointer ${t.btnPrimary.hover} ${t.btnPrimary.hoverBorder}`
-                  : "cursor-not-allowed opacity-40"
-              }`}
-            >
-              Check
-            </button>
-            <button
-              onClick={() => setConfirmingReset(true)}
-              disabled={!gameActive}
-              className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} transition-all duration-150 tracking-wide ${
-                gameActive
-                  ? `cursor-pointer ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`
-                  : "cursor-not-allowed opacity-40"
-              }`}
-            >
-              Reset
-            </button>
+        )}
+        <div className="flex items-center gap-4 flex-wrap justify-center min-h-[38px]">
+          <button
+            onClick={check}
+            disabled={!hasPlaced || allCorrect}
+            className={`font-mono text-sm font-semibold px-6 py-2 rounded-md border-2 ${t.btnPrimary.border} ${t.btnPrimary.bg} ${t.btnPrimary.text} tracking-wide transition-all duration-150 ${
+              hasPlaced && !allCorrect
+                ? `cursor-pointer ${t.btnPrimary.hover} ${t.btnPrimary.hoverBorder}`
+                : "cursor-not-allowed opacity-40"
+            }`}
+          >
+            Check
+          </button>
+          <button
+            onClick={() => setConfirmingReset(true)}
+            disabled={!gameActive}
+            className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} transition-all duration-150 tracking-wide ${
+              gameActive
+                ? `cursor-pointer ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`
+                : "cursor-not-allowed opacity-40"
+            }`}
+          >
+            Reset
+          </button>
             {tries >= 10 && !allCorrect && !hardMode && (
               <button
                 onClick={reveal}
@@ -1448,8 +1451,7 @@ export default function App() {
                 </span>
               </div>
             )}
-          </>
-        )}
+        </div>
       </div>
 
       {/* Pool */}
