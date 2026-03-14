@@ -865,6 +865,7 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem("keycapped-theme", theme);
+    document.documentElement.style.colorScheme = theme === "light" ? "light" : "dark";
   }, [theme]);
   const t = THEMES[theme];
   const [platform, setPlatform] = useState<PlatformName>(() => {
@@ -1237,7 +1238,7 @@ export default function App() {
       </header>
 
       {/* ===== GAME AREA ===== */}
-      <main className="flex-1 overflow-auto relative" style={{ scrollbarGutter: "stable" }}>
+      <main className="flex-1 overflow-auto relative" style={{ scrollbarGutter: "stable", scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}>
         <div className="min-h-full flex flex-col items-center justify-center gap-4 py-4">
           {/* Success overlay */}
           {allCorrect && (
