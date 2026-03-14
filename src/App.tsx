@@ -1386,7 +1386,7 @@ export default function App() {
       <div className="relative flex flex-col items-center my-5">
         {confirmingReset && (
           <>
-            <div className="fixed inset-0 z-10" onClick={() => setConfirmingReset(false)} />
+            <div className="fixed inset-0 z-10 bg-black/30" onClick={() => setConfirmingReset(false)} />
             <div className={`absolute bottom-full mb-2 z-20 flex items-center gap-3 px-4 py-2 rounded-lg shadow-lg ${t.board} border ${t.btnSecondary.border}`}>
             <span className={`text-sm ${t.scoreText} font-medium whitespace-nowrap`}>Are you sure?</span>
             <button
