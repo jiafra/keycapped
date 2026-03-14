@@ -1308,10 +1308,7 @@ export default function App() {
                 const placedKey: KeyDef | undefined = placedKeyId ? keyMap[placedKeyId] : undefined;
                 const isLocked = locked.has(item.id);
                 const isCorrect =
-                  checked &&
-                  !isLocked &&
-                  !!placedKeyId &&
-                  isCorrectPlacement(item.id, placedKeyId);
+                  checked && !isLocked && !!placedKeyId && isCorrectPlacement(item.id, placedKeyId);
                 const isWrong =
                   checked && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
                 const isSelected = selected !== null && selectedSource === item.id;
