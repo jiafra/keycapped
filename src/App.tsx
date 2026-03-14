@@ -1284,15 +1284,19 @@ export default function App() {
             ...(hardMode
               ? {
                   boxShadow: fireRoar
-                    ? "0 0 30px 8px rgba(239,68,68,0.7), 0 0 60px 15px rgba(249,115,22,0.5), 0 0 120px 25px rgba(239,68,68,0.3), inset 0 0 40px 8px rgba(249,115,22,0.3)"
-                    : "0 0 15px 2px rgba(239,68,68,0.4), 0 0 40px 5px rgba(249,115,22,0.25), 0 0 80px 10px rgba(239,68,68,0.15), inset 0 0 20px 2px rgba(239,68,68,0.1)",
+                    ? allCorrect
+                      ? "0 0 30px 8px rgba(34,197,94,0.7), 0 0 60px 15px rgba(74,222,128,0.5), 0 0 120px 25px rgba(34,197,94,0.3), inset 0 0 40px 8px rgba(74,222,128,0.3)"
+                      : "0 0 30px 8px rgba(239,68,68,0.7), 0 0 60px 15px rgba(249,115,22,0.5), 0 0 120px 25px rgba(239,68,68,0.3), inset 0 0 40px 8px rgba(249,115,22,0.3)"
+                    : allCorrect
+                      ? "0 0 15px 2px rgba(34,197,94,0.4), 0 0 40px 5px rgba(74,222,128,0.25), 0 0 80px 10px rgba(34,197,94,0.15), inset 0 0 20px 2px rgba(34,197,94,0.1)"
+                      : "0 0 15px 2px rgba(239,68,68,0.4), 0 0 40px 5px rgba(249,115,22,0.25), 0 0 80px 10px rgba(239,68,68,0.15), inset 0 0 20px 2px rgba(239,68,68,0.1)",
                   borderRadius: "12px",
                   outline: fireRoar
-                    ? "2px solid rgba(249,115,22,0.6)"
-                    : "1px solid rgba(239,68,68,0.3)",
+                    ? allCorrect ? "2px solid rgba(74,222,128,0.6)" : "2px solid rgba(249,115,22,0.6)"
+                    : allCorrect ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(239,68,68,0.3)",
                   animation: fireRoar
-                    ? "fire-roar 0.8s ease-out"
-                    : "fire-pulse 2s ease-in-out infinite",
+                    ? allCorrect ? "fire-roar-green 0.8s ease-out" : "fire-roar 0.8s ease-out"
+                    : allCorrect ? "fire-pulse-green 2s ease-in-out infinite" : "fire-pulse 2s ease-in-out infinite",
                   transition: "box-shadow 0.3s ease, outline 0.3s ease",
                 }
               : {}),
@@ -1345,9 +1349,9 @@ export default function App() {
                 }
 
                 const state = getState(
-                  hardMode ? false : isLocked,
-                  hardMode ? false : isCorrect,
-                  hardMode ? false : isWrong,
+                  hardMode && !allCorrect ? false : isLocked,
+                  hardMode && !allCorrect ? false : isCorrect,
+                  hardMode && !allCorrect ? false : isWrong,
                   isSelected,
                   isDragOver,
                 );
