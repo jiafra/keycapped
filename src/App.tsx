@@ -1232,11 +1232,12 @@ export default function App() {
               setLocked(new Set());
               setChecked(false);
             }}
+            disabled={allCorrect}
             title="No hints - keys won't lock or highlight after checking"
-            className={`flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 rounded-lg transition-all duration-150 tracking-wide ${
+            className={`flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 rounded-lg transition-all duration-150 tracking-wide cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${
               hardMode
                 ? `${t.selectorActive} ${t.selectorActiveText} font-semibold shadow-sm`
-                : `${t.selectorBg} ${t.selectorInactive} hover:opacity-80 cursor-pointer`
+                : `${t.selectorBg} ${t.selectorInactive} hover:opacity-80`
             }`}
           >
             <svg width="12" height="12" viewBox="0 0 12 12" className="shrink-0">
