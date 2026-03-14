@@ -639,10 +639,11 @@ function shuffle<T>(arr: T[]): T[] {
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+const SUPABASE_TABLE = import.meta.env.VITE_SUPABASE_TABLE;
 
 async function fetchTotalAttempts(): Promise<number | null> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/attempts?select=count`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=count`, {
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`,
@@ -676,7 +677,7 @@ async function submitAttempt(payload: {
     total: payload.total,
   };
 
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/attempts`, {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
