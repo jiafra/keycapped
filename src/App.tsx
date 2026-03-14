@@ -870,6 +870,7 @@ export default function App() {
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const [tries, setTries] = useState(0);
   const [confirmingReset, setConfirmingReset] = useState(false);
+  const [fireRoar, setFireRoar] = useState(false);
   const [hardMode, setHardMode] = useState<boolean>(() => {
     return localStorage.getItem("keycapped-hard") === "true";
   });
@@ -1062,6 +1063,11 @@ export default function App() {
       sfx.success();
     } else {
       sfx.error();
+    }
+
+    if (hardMode) {
+      setFireRoar(true);
+      setTimeout(() => setFireRoar(false), 800);
     }
 
     submitAttempt({
@@ -1266,8 +1272,21 @@ export default function App() {
         style={{ scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}
       >
         <div
-          className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-colors duration-300 mx-auto shrink-0`}
-          style={{ gap: KEY_GAP }}
+          className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-all duration-300 mx-auto shrink-0`}
+          style={{
+            gap: KEY_GAP,
+            ...(hardMode
+              ? {
+                  boxShadow: fireRoar
+                    ? "0 0 30px 8px rgba(239,68,68,0.7), 0 0 60px 15px rgba(249,115,22,0.5), 0 0 120px 25px rgba(239,68,68,0.3), inset 0 0 40px 8px rgba(249,115,22,0.3)"
+                    : "0 0 15px 2px rgba(239,68,68,0.4), 0 0 40px 5px rgba(249,115,22,0.25), 0 0 80px 10px rgba(239,68,68,0.15), inset 0 0 20px 2px rgba(239,68,68,0.1)",
+                  borderRadius: "12px",
+                  outline: fireRoar ? "2px solid rgba(249,115,22,0.6)" : "1px solid rgba(239,68,68,0.3)",
+                  animation: fireRoar ? "fire-roar 0.8s ease-out" : "fire-pulse 2s ease-in-out infinite",
+                  transition: "box-shadow 0.3s ease, outline 0.3s ease",
+                }
+              : {}),
+          }}
         >
           {BOARD.map((row, ri) => (
             <div key={ri} className="flex" style={{ gap: KEY_GAP }}>
