@@ -640,6 +640,25 @@ function shuffle<T>(arr: T[]): T[] {
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 
+async function fetchTotalAttempts(): Promise<number | null> {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/attempts?select=count`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        Prefer: "count=exact",
+      },
+    });
+    if (!res.ok) return null;
+    const range = res.headers.get("content-range");
+    if (!range) return null;
+    const total = range.split("/").pop();
+    return total ? parseInt(total, 10) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function submitAttempt(payload: {
   attempt: number;
   layout: LayoutName;
@@ -827,6 +846,11 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("keycapped-platform", platform);
   }, [platform]);
+
+  const [totalAttempts, setTotalAttempts] = useState<number | null>(null);
+  useEffect(() => {
+    fetchTotalAttempts().then(setTotalAttempts);
+  }, []);
 
   const [layout, setLayout] = useState<LayoutName>(() => {
     const saved = localStorage.getItem("keycapped-layout");
@@ -1047,7 +1071,7 @@ export default function App() {
       hardMode,
       correct,
       total: allKeys.length,
-    });
+    }).then(() => fetchTotalAttempts().then(setTotalAttempts));
   };
 
   const reveal = () => {
@@ -1129,6 +1153,9 @@ export default function App() {
         </div>
         <p className={`text-xs ${t.subtitle} mt-1.5`}>
           All your keys fell off. Can you put them back?
+        </p>
+        <p className={`text-xs ${t.title} mt-2 font-bold tracking-wide opacity-60`}>
+          {totalAttempts !== null ? `${totalAttempts.toLocaleString()} attempts worldwide` : "..."}
         </p>
         {/* Selectors */}
         <div className="flex gap-3 my-6 justify-center flex-wrap">
