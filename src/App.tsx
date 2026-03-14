@@ -1419,7 +1419,7 @@ export default function App() {
             >
               Reset
             </button>
-            {tries >= 10 && !allCorrect && (
+            {tries >= 10 && !allCorrect && !hardMode && (
               <button
                 onClick={reveal}
                 className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnReveal.border} ${t.btnReveal.bg} ${t.btnReveal.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnReveal.hover} ${t.btnReveal.hoverBorder}`}
