@@ -1188,7 +1188,7 @@ export default function App() {
       </header>
 
       {/* ===== GAME AREA ===== */}
-      <main className="flex-1 overflow-auto relative">
+      <main className="flex-1 overflow-auto relative" style={{ scrollbarGutter: "stable" }}>
         <div className="min-h-full flex flex-col items-center justify-center gap-4 px-4 py-4">
           {/* Success overlay */}
           {allCorrect && (
