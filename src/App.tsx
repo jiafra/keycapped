@@ -1200,7 +1200,11 @@ export default function App() {
             className={`text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
             style={
               hardMode
-                ? { animation: allCorrect ? "fire-text-pulse-green 2s ease-in-out infinite" : "fire-text-pulse 2s ease-in-out infinite" }
+                ? {
+                    animation: allCorrect
+                      ? "fire-text-pulse-green 2s ease-in-out infinite"
+                      : "fire-text-pulse 2s ease-in-out infinite",
+                  }
                 : undefined
             }
           >
@@ -1213,7 +1217,11 @@ export default function App() {
           className={`sm:hidden text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
           style={
             hardMode
-              ? { animation: allCorrect ? "fire-text-pulse-green 2s ease-in-out infinite" : "fire-text-pulse 2s ease-in-out infinite" }
+              ? {
+                  animation: allCorrect
+                    ? "fire-text-pulse-green 2s ease-in-out infinite"
+                    : "fire-text-pulse 2s ease-in-out infinite",
+                }
               : undefined
           }
         >
@@ -1230,7 +1238,7 @@ export default function App() {
 
       {/* ===== GAME AREA ===== */}
       <main className="flex-1 overflow-auto relative" style={{ scrollbarGutter: "stable" }}>
-        <div className="min-h-full flex flex-col items-center justify-center gap-4 px-4 py-4">
+        <div className="min-h-full flex flex-col items-center justify-center gap-4 py-4">
           {/* Success overlay */}
           {allCorrect && (
             <div
@@ -1240,11 +1248,11 @@ export default function App() {
             </div>
           )}
 
-          <p className={`text-sm min-h-5 text-center ${!gameActive ? t.subtitle : ""}`}>
+          <p className={`text-sm min-h-5 text-center px-4 ${!gameActive ? t.subtitle : ""}`}>
             {!gameActive && "All your keys fell off. Can you put them back?"}
           </p>
           <p
-            className={`text-xs font-semibold min-h-4 ${score ? (allCorrect ? t.scoreAccent : t.scoreText) : ""}`}
+            className={`text-xs font-semibold min-h-4 px-4 ${score ? (allCorrect ? t.scoreAccent : t.scoreText) : ""}`}
           >
             {score && (
               <>
@@ -1264,7 +1272,7 @@ export default function App() {
 
           {/* Keyboard */}
           <div
-            className="w-full overflow-x-auto flex shrink-0"
+            className="w-full overflow-x-auto flex shrink-0 px-4"
             style={{ scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}
           >
             <div
@@ -1385,7 +1393,7 @@ export default function App() {
           </div>
 
           {/* Actions */}
-          <div className="relative flex items-center justify-center gap-3 my-2">
+          <div className="relative flex items-center justify-center gap-3 my-2 px-4">
             {confirmingReset && (
               <>
                 <div
@@ -1446,7 +1454,7 @@ export default function App() {
           </div>
 
           {/* Pool */}
-          <div className="max-w-3xl w-full shrink-0">
+          <div className="max-w-3xl w-full shrink-0 px-4">
             {poolKeys.length > 0 ? (
               <>
                 <div
