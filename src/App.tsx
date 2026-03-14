@@ -1145,11 +1145,11 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen ${t.page} flex flex-col items-center px-4 py-6 font-mono transition-colors duration-300`}
+      className={`h-screen ${t.page} flex flex-col font-mono transition-colors duration-300 overflow-hidden`}
     >
-      {/* Header */}
-      <div className="text-center mb-7">
-        <div className="flex items-center justify-center gap-2">
+      {/* ===== TOP BAR ===== */}
+      <header className="relative flex items-center justify-between px-6 py-3 shrink-0">
+        <div className="flex items-center gap-3">
           <h1 className={`text-xl font-semibold ${t.title} tracking-tight`}>keycapped</h1>
           <a
             href="https://github.com/jiafra/keycapped"
@@ -1163,15 +1163,282 @@ export default function App() {
             </svg>
           </a>
         </div>
-        <p className={`text-xs ${t.subtitle} mt-1.5`}>
-          All your keys fell off. Can you put them back?
-        </p>
-        <p className={`text-xs ${t.title} mt-2 font-bold tracking-wide opacity-60`}>
+
+        {/* Timer - center */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+          <p
+            className={`text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
+          >
+            {formatTime(elapsed)}
+          </p>
+        </div>
+
+        {/* Worldwide attempts - right */}
+        <p className={`text-xs ${t.subtitle} tabular-nums font-bold tracking-wide opacity-60`}>
           {totalAttempts !== null ? `${totalAttempts.toLocaleString()} attempts worldwide` : "..."}
         </p>
-        {/* Selectors */}
-        <div className="flex gap-3 my-6 justify-center flex-wrap">
-          {/* Layout selector */}
+      </header>
+
+      {/* ===== GAME AREA ===== */}
+      <main className="flex-1 overflow-auto relative">
+        <div className="min-h-full flex flex-col items-center justify-center gap-4 px-4 py-4">
+          {/* Success overlay */}
+          {allCorrect && (
+            <div
+              className={`absolute top-4 px-6 py-3 ${t.successBg} rounded-lg ${t.successText} text-sm font-medium tracking-wide z-10`}
+            >
+              You know your keyboard. Well done!
+            </div>
+          )}
+
+          <p className={`text-sm min-h-5 ${!gameActive ? t.subtitle : ""}`}>
+            {!gameActive && "All your keys fell off. Can you put them back?"}
+          </p>
+          <p
+            className={`text-xs font-semibold min-h-4 ${score ? (allCorrect ? t.scoreAccent : t.scoreText) : ""}`}
+          >
+            {score && (
+              <>
+                {allCorrect ? (
+                  `All ${score.total} correct`
+                ) : (
+                  <>
+                    {score.correct} / {score.total} correct
+                  </>
+                )}{" "}
+                <span className={`${t.scoreMuted} font-normal`}>
+                  ({tries} {tries === 1 ? "try" : "tries"})
+                </span>
+              </>
+            )}
+          </p>
+
+          {/* Keyboard */}
+          <div
+            className="w-full overflow-x-auto flex shrink-0"
+            style={{ scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}
+          >
+            <div
+              className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-all duration-300 mx-auto shrink-0`}
+              style={{
+                gap: KEY_GAP,
+                ...(hardMode
+                  ? {
+                      boxShadow: fireRoar
+                        ? allCorrect
+                          ? "0 0 30px 8px rgba(34,197,94,0.7), 0 0 60px 15px rgba(74,222,128,0.5), 0 0 120px 25px rgba(34,197,94,0.3), inset 0 0 40px 8px rgba(74,222,128,0.3)"
+                          : "0 0 30px 8px rgba(239,68,68,0.7), 0 0 60px 15px rgba(249,115,22,0.5), 0 0 120px 25px rgba(239,68,68,0.3), inset 0 0 40px 8px rgba(249,115,22,0.3)"
+                        : allCorrect
+                          ? "0 0 15px 2px rgba(34,197,94,0.4), 0 0 40px 5px rgba(74,222,128,0.25), 0 0 80px 10px rgba(34,197,94,0.15), inset 0 0 20px 2px rgba(34,197,94,0.1)"
+                          : "0 0 15px 2px rgba(239,68,68,0.4), 0 0 40px 5px rgba(249,115,22,0.25), 0 0 80px 10px rgba(239,68,68,0.15), inset 0 0 20px 2px rgba(239,68,68,0.1)",
+                      borderRadius: "12px",
+                      outline: fireRoar
+                        ? allCorrect
+                          ? "2px solid rgba(74,222,128,0.6)"
+                          : "2px solid rgba(249,115,22,0.6)"
+                        : allCorrect
+                          ? "1px solid rgba(34,197,94,0.3)"
+                          : "1px solid rgba(239,68,68,0.3)",
+                      animation: fireRoar
+                        ? allCorrect
+                          ? "fire-roar-green 0.8s ease-out forwards"
+                          : "fire-roar 0.8s ease-out forwards"
+                        : allCorrect
+                          ? "fire-pulse-green 2s ease-in-out infinite"
+                          : "fire-pulse 2s ease-in-out infinite",
+                      transition: "box-shadow 0.3s ease, outline 0.3s ease",
+                    }
+                  : {}),
+              }}
+            >
+              {BOARD.map((row, ri) => (
+                <div key={ri} className="flex" style={{ gap: KEY_GAP }}>
+                  {row.map((item) => {
+                    if ("spacer" in item) {
+                      return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
+                    }
+
+                    if (!activeIds.has(item.id)) {
+                      return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
+                    }
+
+                    const placedKeyId: string | undefined = placements[item.id];
+                    const placedKey: KeyDef | undefined = placedKeyId
+                      ? keyMap[placedKeyId]
+                      : undefined;
+                    const isLocked = locked.has(item.id);
+                    const isCorrect =
+                      checked &&
+                      !isLocked &&
+                      !!placedKeyId &&
+                      isCorrectPlacement(item.id, placedKeyId);
+                    const isWrong =
+                      checked && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
+                    const isSelected = selected !== null && selectedSource === item.id;
+                    const isDragOver = hoveredSlot === item.id;
+
+                    if (!placedKey) {
+                      return (
+                        <div
+                          key={item.id}
+                          className={slotCls(isDragOver, selected !== null, t)}
+                          style={keySize(item.w)}
+                          onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
+                            e.preventDefault();
+                            setHoveredSlot(item.id);
+                          }}
+                          onDragLeave={() => setHoveredSlot(null)}
+                          onDrop={handleDropSlot(item.id)}
+                          onClick={() => {
+                            setConfirmingReset(false);
+                            if (selected && selectedSource) {
+                              placeKey(selected, item.id, selectedSource);
+                              sfx.drop();
+                              setSelected(null);
+                              setSelectedSource(null);
+                            }
+                          }}
+                        />
+                      );
+                    }
+
+                    const state = getState(
+                      hardMode && !allCorrect ? false : isLocked,
+                      hardMode && !allCorrect ? false : isCorrect,
+                      hardMode && !allCorrect ? false : isWrong,
+                      isSelected,
+                      isDragOver,
+                    );
+
+                    return (
+                      <div
+                        key={item.id}
+                        draggable={!isLocked}
+                        onDragStart={handleDragStart(placedKeyId, item.id)}
+                        onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
+                          e.preventDefault();
+                          setHoveredSlot(item.id);
+                        }}
+                        onDragLeave={() => setHoveredSlot(null)}
+                        onDrop={handleDropSlot(item.id)}
+                        onClick={() => handleSlotClick(item.id)}
+                        onDoubleClick={() => !isLocked && removeFromSlot(item.id)}
+                        className={keycapCls(state, t)}
+                        style={{ ...keySize(item.w), fontSize: item.w > 1.5 ? 11 : 12 }}
+                      >
+                        {placedKey.label}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="relative flex items-center justify-center gap-3 my-2">
+            {confirmingReset && (
+              <>
+                <div
+                  className="fixed inset-0 z-10 bg-black/30"
+                  onClick={() => setConfirmingReset(false)}
+                />
+                <div
+                  className={`absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 px-4 py-2 rounded-lg shadow-lg ${t.board} border ${t.btnSecondary.border}`}
+                >
+                  <span className={`text-sm ${t.scoreText} font-medium whitespace-nowrap`}>
+                    Are you sure?
+                  </span>
+                  <button
+                    onClick={() => resetGame()}
+                    className={`font-mono text-xs font-semibold px-3 py-1 rounded-md border-2 ${t.btnDanger.border} ${t.btnDanger.bg} ${t.btnDanger.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnDanger.hover} ${t.btnDanger.hoverBorder}`}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={() => setConfirmingReset(false)}
+                    className={`font-mono text-xs font-medium px-3 py-1 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`}
+                  >
+                    No
+                  </button>
+                </div>
+              </>
+            )}
+            <button
+              onClick={check}
+              disabled={!hasPlaced || allCorrect}
+              className={`font-mono text-sm font-semibold px-6 py-2 rounded-md border-2 ${t.btnPrimary.border} ${t.btnPrimary.bg} ${t.btnPrimary.text} tracking-wide transition-all duration-150 ${
+                hasPlaced && !allCorrect
+                  ? `cursor-pointer ${t.btnPrimary.hover} ${t.btnPrimary.hoverBorder}`
+                  : "cursor-not-allowed opacity-40"
+              }`}
+            >
+              Check
+            </button>
+            <button
+              onClick={() => setConfirmingReset(true)}
+              disabled={!gameActive}
+              className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} transition-all duration-150 tracking-wide ${
+                gameActive
+                  ? `cursor-pointer ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`
+                  : "cursor-not-allowed opacity-40"
+              }`}
+            >
+              Reset
+            </button>
+            {tries >= 10 && !allCorrect && !hardMode && (
+              <button
+                onClick={reveal}
+                className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnReveal.border} ${t.btnReveal.bg} ${t.btnReveal.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnReveal.hover} ${t.btnReveal.hoverBorder}`}
+              >
+                Reveal
+              </button>
+            )}
+          </div>
+
+          {/* Pool */}
+          <div className="max-w-3xl w-full shrink-0">
+            {poolKeys.length > 0 ? (
+              <>
+                <div
+                  className={`text-[10px] ${t.poolLabel} uppercase tracking-widest font-semibold mb-1.5 text-center`}
+                >
+                  {poolKeys.length} remaining
+                </div>
+                <div
+                  className={`flex flex-wrap justify-center p-2.5 ${t.poolBg} rounded-xl min-h-11.5 transition-colors duration-300`}
+                  style={{ gap: KEY_GAP + 1 }}
+                  onDragOver={(e: React.DragEvent<HTMLDivElement>) => e.preventDefault()}
+                  onDrop={handleDropPool}
+                >
+                  {poolKeys.map((id) => {
+                    const key = keyMap[id];
+                    const isSelected = selected === id && selectedSource === "pool";
+                    return (
+                      <div
+                        key={id}
+                        draggable
+                        onDragStart={handleDragStart(id, "pool")}
+                        onClick={() => handlePoolKeyClick(id)}
+                        className={keycapCls(isSelected ? "selected" : "pool", t)}
+                        style={{ ...keySize(key.w), fontSize: key.w > 1.5 ? 11 : 12 }}
+                      >
+                        {key.label}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="min-h-11.5" />
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* ===== BOTTOM BAR ===== */}
+      <footer className="shrink-0 px-6 py-3 flex items-center justify-center gap-4">
+        <div className="flex gap-2 flex-wrap items-center justify-center">
           <div className={`flex gap-1 p-1 ${t.selectorBg} rounded-lg w-fit`}>
             {LAYOUT_OPTIONS.map((opt) => (
               <button
@@ -1190,7 +1457,6 @@ export default function App() {
               </button>
             ))}
           </div>
-          {/* Platform selector */}
           <div className={`flex gap-1 p-1 ${t.selectorBg} rounded-lg w-fit`}>
             {PLATFORM_OPTIONS.map((opt) => (
               <button
@@ -1209,7 +1475,6 @@ export default function App() {
               </button>
             ))}
           </div>
-          {/* Theme selector */}
           <div className={`flex gap-1 p-1 ${t.selectorBg} rounded-lg w-fit`}>
             {THEME_OPTIONS.map((opt) => (
               <button
@@ -1225,7 +1490,6 @@ export default function App() {
               </button>
             ))}
           </div>
-          {/* Hard mode toggle */}
           <button
             onClick={() => {
               setHardMode((v) => !v);
@@ -1266,235 +1530,7 @@ export default function App() {
             Hard
           </button>
         </div>
-        <p
-          className={`text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
-        >
-          {formatTime(elapsed)}
-        </p>
-      </div>
-
-      {/* Keyboard */}
-      <div
-        className="w-full overflow-x-auto flex"
-        style={{ scrollbarColor: `${t.scrollbarThumb} ${t.scrollbarTrack}` }}
-      >
-        <div
-          className={`${t.board} rounded-xl p-2 inline-flex flex-col shadow-md transition-all duration-300 mx-auto shrink-0`}
-          style={{
-            gap: KEY_GAP,
-            ...(hardMode
-              ? {
-                  boxShadow: fireRoar
-                    ? allCorrect
-                      ? "0 0 30px 8px rgba(34,197,94,0.7), 0 0 60px 15px rgba(74,222,128,0.5), 0 0 120px 25px rgba(34,197,94,0.3), inset 0 0 40px 8px rgba(74,222,128,0.3)"
-                      : "0 0 30px 8px rgba(239,68,68,0.7), 0 0 60px 15px rgba(249,115,22,0.5), 0 0 120px 25px rgba(239,68,68,0.3), inset 0 0 40px 8px rgba(249,115,22,0.3)"
-                    : allCorrect
-                      ? "0 0 15px 2px rgba(34,197,94,0.4), 0 0 40px 5px rgba(74,222,128,0.25), 0 0 80px 10px rgba(34,197,94,0.15), inset 0 0 20px 2px rgba(34,197,94,0.1)"
-                      : "0 0 15px 2px rgba(239,68,68,0.4), 0 0 40px 5px rgba(249,115,22,0.25), 0 0 80px 10px rgba(239,68,68,0.15), inset 0 0 20px 2px rgba(239,68,68,0.1)",
-                  borderRadius: "12px",
-                  outline: fireRoar
-                    ? allCorrect ? "2px solid rgba(74,222,128,0.6)" : "2px solid rgba(249,115,22,0.6)"
-                    : allCorrect ? "1px solid rgba(34,197,94,0.3)" : "1px solid rgba(239,68,68,0.3)",
-                  animation: fireRoar
-                    ? allCorrect ? "fire-roar-green 0.8s ease-out" : "fire-roar 0.8s ease-out"
-                    : allCorrect ? "fire-pulse-green 2s ease-in-out infinite" : "fire-pulse 2s ease-in-out infinite",
-                  transition: "box-shadow 0.3s ease, outline 0.3s ease",
-                }
-              : {}),
-          }}
-        >
-          {BOARD.map((row, ri) => (
-            <div key={ri} className="flex" style={{ gap: KEY_GAP }}>
-              {row.map((item) => {
-                if ("spacer" in item) {
-                  return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
-                }
-
-                if (!activeIds.has(item.id)) {
-                  return <div key={item.id} className="shrink-0" style={keySize(item.w)} />;
-                }
-
-                const placedKeyId: string | undefined = placements[item.id];
-                const placedKey: KeyDef | undefined = placedKeyId ? keyMap[placedKeyId] : undefined;
-                const isLocked = locked.has(item.id);
-                const isCorrect =
-                  checked && !isLocked && !!placedKeyId && isCorrectPlacement(item.id, placedKeyId);
-                const isWrong =
-                  checked && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
-                const isSelected = selected !== null && selectedSource === item.id;
-                const isDragOver = hoveredSlot === item.id;
-
-                if (!placedKey) {
-                  return (
-                    <div
-                      key={item.id}
-                      className={slotCls(isDragOver, selected !== null, t)}
-                      style={keySize(item.w)}
-                      onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
-                        e.preventDefault();
-                        setHoveredSlot(item.id);
-                      }}
-                      onDragLeave={() => setHoveredSlot(null)}
-                      onDrop={handleDropSlot(item.id)}
-                      onClick={() => {
-                        setConfirmingReset(false);
-                        if (selected && selectedSource) {
-                          placeKey(selected, item.id, selectedSource);
-                          sfx.drop();
-                          setSelected(null);
-                          setSelectedSource(null);
-                        }
-                      }}
-                    />
-                  );
-                }
-
-                const state = getState(
-                  hardMode && !allCorrect ? false : isLocked,
-                  hardMode && !allCorrect ? false : isCorrect,
-                  hardMode && !allCorrect ? false : isWrong,
-                  isSelected,
-                  isDragOver,
-                );
-
-                return (
-                  <div
-                    key={item.id}
-                    draggable={!isLocked}
-                    onDragStart={handleDragStart(placedKeyId, item.id)}
-                    onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
-                      e.preventDefault();
-                      setHoveredSlot(item.id);
-                    }}
-                    onDragLeave={() => setHoveredSlot(null)}
-                    onDrop={handleDropSlot(item.id)}
-                    onClick={() => handleSlotClick(item.id)}
-                    onDoubleClick={() => !isLocked && removeFromSlot(item.id)}
-                    className={keycapCls(state, t)}
-                    style={{ ...keySize(item.w), fontSize: item.w > 1.5 ? 11 : 12 }}
-                  >
-                    {placedKey.label}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="relative flex flex-col items-center my-5">
-        {confirmingReset && (
-          <>
-            <div className="fixed inset-0 z-10 bg-black/30" onClick={() => setConfirmingReset(false)} />
-            <div className={`absolute bottom-full mb-2 z-20 flex items-center gap-3 px-4 py-2 rounded-lg shadow-lg ${t.board} border ${t.btnSecondary.border}`}>
-            <span className={`text-sm ${t.scoreText} font-medium whitespace-nowrap`}>Are you sure?</span>
-            <button
-              onClick={() => resetGame()}
-              className={`font-mono text-xs font-semibold px-3 py-1 rounded-md border-2 ${t.btnDanger.border} ${t.btnDanger.bg} ${t.btnDanger.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnDanger.hover} ${t.btnDanger.hoverBorder}`}
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => setConfirmingReset(false)}
-              className={`font-mono text-xs font-medium px-3 py-1 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`}
-            >
-              No
-            </button>
-          </div>
-          </>
-        )}
-        <div className="flex items-center gap-4 flex-wrap justify-center min-h-[38px]">
-          <button
-            onClick={check}
-            disabled={!hasPlaced || allCorrect}
-            className={`font-mono text-sm font-semibold px-6 py-2 rounded-md border-2 ${t.btnPrimary.border} ${t.btnPrimary.bg} ${t.btnPrimary.text} tracking-wide transition-all duration-150 ${
-              hasPlaced && !allCorrect
-                ? `cursor-pointer ${t.btnPrimary.hover} ${t.btnPrimary.hoverBorder}`
-                : "cursor-not-allowed opacity-40"
-            }`}
-          >
-            Check
-          </button>
-          <button
-            onClick={() => setConfirmingReset(true)}
-            disabled={!gameActive}
-            className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnSecondary.border} ${t.btnSecondary.bg} ${t.btnSecondary.text} transition-all duration-150 tracking-wide ${
-              gameActive
-                ? `cursor-pointer ${t.btnSecondary.hoverBorder} ${t.btnSecondary.hover}`
-                : "cursor-not-allowed opacity-40"
-            }`}
-          >
-            Reset
-          </button>
-            {tries >= 10 && !allCorrect && !hardMode && (
-              <button
-                onClick={reveal}
-                className={`font-mono text-sm font-medium px-5 py-2 rounded-md border-2 ${t.btnReveal.border} ${t.btnReveal.bg} ${t.btnReveal.text} cursor-pointer transition-all duration-150 tracking-wide ${t.btnReveal.hover} ${t.btnReveal.hoverBorder}`}
-              >
-                Reveal
-              </button>
-            )}
-            {score && (
-              <div className={`text-sm font-semibold ${allCorrect ? t.scoreAccent : t.scoreText}`}>
-                {allCorrect ? (
-                  <span>✓ Perfect — all {score.total} keys correct</span>
-                ) : (
-                  <span>
-                    <span className="text-lg font-bold">{score.correct}</span>
-                    <span className={`${t.scoreMuted}`}> / {score.total}</span>
-                    <span className={`${t.scoreMuted} font-normal ml-1.5`}>correct</span>
-                  </span>
-                )}
-                <span className={`${t.scoreMuted} font-normal ml-2`}>
-                  ({tries} {tries === 1 ? "attempt" : "attempts"})
-                </span>
-              </div>
-            )}
-        </div>
-      </div>
-
-      {/* Pool */}
-      {poolKeys.length > 0 && (
-        <div className="max-w-3xl w-full">
-          <div
-            className={`text-[10px] ${t.poolLabel} uppercase tracking-widest font-semibold mb-2 text-center`}
-          >
-            Keycaps ({poolKeys.length} remaining)
-          </div>
-          <div
-            className={`flex flex-wrap justify-center p-3 ${t.poolBg} rounded-xl min-h-[50px] transition-colors duration-300`}
-            style={{ gap: KEY_GAP + 1 }}
-            onDragOver={(e: React.DragEvent<HTMLDivElement>) => e.preventDefault()}
-            onDrop={handleDropPool}
-          >
-            {poolKeys.map((id) => {
-              const key = keyMap[id];
-              const isSelected = selected === id && selectedSource === "pool";
-              return (
-                <div
-                  key={id}
-                  draggable
-                  onDragStart={handleDragStart(id, "pool")}
-                  onClick={() => handlePoolKeyClick(id)}
-                  className={keycapCls(isSelected ? "selected" : "pool", t)}
-                  style={{ ...keySize(key.w), fontSize: key.w > 1.5 ? 11 : 12 }}
-                >
-                  {key.label}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {allCorrect && (
-        <div
-          className={`mt-5 px-6 py-3 ${t.successBg} rounded-lg ${t.successText} text-sm font-medium text-center`}
-        >
-          You know your keyboard. Well done!
-        </div>
-      )}
+      </footer>
     </div>
   );
 }
