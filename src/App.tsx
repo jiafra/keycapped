@@ -825,6 +825,35 @@ const getState = (
   return "placed";
 };
 
+// --- Smooth resize container ---
+
+function SmoothResize(props: React.ComponentProps<"div">) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setHeight(el.scrollHeight);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div
+      style={{
+        height: height !== undefined ? height : "auto",
+        transition: "height 300ms ease",
+        overflow: "hidden",
+      }}
+    >
+      <div ref={ref} {...props} />
+    </div>
+  );
+}
+
 // --- Component ---
 
 export default function App() {
@@ -1413,7 +1442,7 @@ export default function App() {
                 >
                   {poolKeys.length} remaining
                 </div>
-                <div
+                <SmoothResize
                   className={`flex flex-wrap justify-center p-2.5 ${t.poolBg} rounded-xl min-h-11.5 transition-colors duration-300`}
                   style={{ gap: KEY_GAP + 1 }}
                   onDragOver={(e: React.DragEvent<HTMLDivElement>) => e.preventDefault()}
@@ -1435,7 +1464,7 @@ export default function App() {
                       </div>
                     );
                   })}
-                </div>
+                </SmoothResize>
               </>
             ) : (
               <div className="min-h-11.5" />
