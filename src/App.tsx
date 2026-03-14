@@ -873,6 +873,7 @@ export default function App() {
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [fireRoar, setFireRoar] = useState(false);
   const roarTimer = useRef<ReturnType<typeof setTimeout>>(null);
+  const [footerOpen, setFooterOpen] = useState(true);
   const [hardMode, setHardMode] = useState<boolean>(() => {
     return localStorage.getItem("keycapped-hard") === "true";
   });
@@ -1164,8 +1165,8 @@ export default function App() {
           </a>
         </div>
 
-        {/* Timer - center */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+        {/* Timer - center on desktop, right on mobile */}
+        <div className="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex-col items-center">
           <p
             className={`text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
           >
@@ -1173,8 +1174,15 @@ export default function App() {
           </p>
         </div>
 
-        {/* Worldwide attempts - right */}
-        <p className={`text-xs ${t.subtitle} tabular-nums font-bold tracking-wide opacity-60`}>
+        {/* Timer - right on mobile */}
+        <p
+          className={`sm:hidden text-2xl tabular-nums ${allCorrect ? `${t.timerDone} font-semibold` : t.timer}`}
+        >
+          {formatTime(elapsed)}
+        </p>
+
+        {/* Worldwide attempts - right, hidden on mobile */}
+        <p className={`hidden sm:block text-xs ${t.subtitle} tabular-nums font-bold tracking-wide opacity-60`}>
           {totalAttempts !== null ? `${totalAttempts.toLocaleString()} attempts worldwide` : "..."}
         </p>
       </header>
@@ -1191,7 +1199,7 @@ export default function App() {
             </div>
           )}
 
-          <p className={`text-sm min-h-5 ${!gameActive ? t.subtitle : ""}`}>
+          <p className={`text-sm min-h-5 text-center ${!gameActive ? t.subtitle : ""}`}>
             {!gameActive && "All your keys fell off. Can you put them back?"}
           </p>
           <p
@@ -1437,8 +1445,27 @@ export default function App() {
       </main>
 
       {/* ===== BOTTOM BAR ===== */}
-      <footer className="shrink-0 px-6 py-3 flex items-center justify-center gap-4">
-        <div className="flex gap-2 flex-wrap items-center justify-center">
+      <footer className="shrink-0">
+        <button
+          onClick={() => setFooterOpen((v) => !v)}
+          className={`sm:hidden w-full flex items-center justify-center py-2.5 ${t.subtitle} cursor-pointer`}
+          aria-label={footerOpen ? "Hide settings" : "Show settings"}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={footerOpen ? "rotate-180" : ""}
+          >
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
+        <div className={`${footerOpen ? "flex" : "hidden"} sm:flex px-6 py-3 gap-2 flex-wrap items-center justify-center`}>
           <div className={`flex gap-1 p-1 ${t.selectorBg} rounded-lg w-fit`}>
             {LAYOUT_OPTIONS.map((opt) => (
               <button
