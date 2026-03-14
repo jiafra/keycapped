@@ -863,7 +863,7 @@ export default function App() {
   }, [layout]);
   const [placements, setPlacements] = useState<Placements>({});
   const [locked, setLocked] = useState<Set<string>>(new Set());
-  const [results, setResults] = useState<Record<string, never> | null>(null);
+  const [checked, setChecked] = useState(false);
   const [poolOrder, setPoolOrder] = useState<string[]>(() => shuffle(ALL_SLOT_IDS));
   const [selected, setSelected] = useState<string | null>(null);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
@@ -928,14 +928,14 @@ export default function App() {
   );
 
   const score = useMemo<Score | null>(() => {
-    if (!results) return null;
+    if (!checked) return null;
     let correct = 0;
     for (const k of allKeys) {
       if (locked.has(k.id) || (placements[k.id] && isCorrectPlacement(k.id, placements[k.id])))
         correct++;
     }
     return { correct, total: allKeys.length };
-  }, [results, placements, locked, allKeys, isCorrectPlacement]);
+  }, [checked, placements, locked, allKeys, isCorrectPlacement]);
 
   const placeKey = useCallback(
     (keyId: string, slotId: string, fromSlot: string | null) => {
@@ -956,7 +956,7 @@ export default function App() {
         next[slotId] = keyId;
         return next;
       });
-      setResults(null);
+      setChecked(false);
     },
     [locked, startTimer],
   );
@@ -969,7 +969,7 @@ export default function App() {
         delete next[slotId];
         return next;
       });
-      setResults(null);
+      setChecked(false);
     },
     [locked],
   );
@@ -1054,7 +1054,7 @@ export default function App() {
     }
     const nextTry = tries + 1;
     setLocked(newLocked);
-    setResults({});
+    setChecked(true);
     setTries(nextTry);
     setSelected(null);
     setSelectedSource(null);
@@ -1087,7 +1087,7 @@ export default function App() {
       else all[k.id] = placements[k.id];
     }
     setPlacements(all);
-    setResults(null);
+    setChecked(false);
     setSelected(null);
     setSelectedSource(null);
     setTries(0);
@@ -1098,7 +1098,7 @@ export default function App() {
       if (!silent) sfx.reset();
       setPlacements({});
       setLocked(new Set());
-      setResults(null);
+      setChecked(false);
       setPoolOrder(shuffle(ALL_SLOT_IDS));
       setSelected(null);
       setSelectedSource(null);
@@ -1224,7 +1224,7 @@ export default function App() {
             onClick={() => {
               setHardMode((v) => !v);
               setLocked(new Set());
-              setResults(null);
+              setChecked(false);
             }}
             title="No hints - keys won't lock or highlight after checking"
             className={`flex items-center gap-1.5 font-mono text-xs px-3 py-1.5 rounded-lg transition-all duration-150 tracking-wide ${
@@ -1307,12 +1307,12 @@ export default function App() {
                 const placedKey: KeyDef | undefined = placedKeyId ? keyMap[placedKeyId] : undefined;
                 const isLocked = locked.has(item.id);
                 const isCorrect =
-                  !!results &&
+                  checked &&
                   !isLocked &&
                   !!placedKeyId &&
                   isCorrectPlacement(item.id, placedKeyId);
                 const isWrong =
-                  !!results && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
+                  checked && !!placedKeyId && !isCorrectPlacement(item.id, placedKeyId);
                 const isSelected = selected !== null && selectedSource === item.id;
                 const isDragOver = hoveredSlot === item.id;
 
